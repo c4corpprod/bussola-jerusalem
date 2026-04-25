@@ -74,8 +74,16 @@
                 <span class="nav-label">Mapa</span>
             </button>
             <button class="nav-btn" data-tab="tab-community" onclick="switchTab('tab-community')">
-                <span class="nav-icon">👥</span>
+                <span class="nav-icon" style="position:relative">👥<span id="community-notif-badge" style="display:none;position:absolute;top:-7px;right:-9px;background:#e74c3c;color:#fff;font-size:0.55rem;font-weight:700;padding:1px 4px;border-radius:10px;min-width:14px;text-align:center;line-height:1.4"></span></span>
                 <span class="nav-label">Comunidade</span>
+            </button>
+            <button class="nav-btn" data-tab="tab-bible" onclick="switchTab('tab-bible'); initBibleIfNeeded();">
+                <span class="nav-icon">📖</span>
+                <span class="nav-label">Bíblia</span>
+            </button>
+            <button class="nav-btn" data-tab="tab-studies" onclick="switchTab('tab-studies')">
+                <span class="nav-icon">🧾</span>
+                <span class="nav-label">Estudos</span>
             </button>
             <button class="nav-btn" data-tab="tab-pix" onclick="switchTab('tab-pix')">
                 <span class="nav-icon">💛</span>
@@ -223,32 +231,347 @@
                 <!-- Área de Auth -->
                 <div id="community-auth-area"></div>
 
-                <!-- Filtros -->
-                <div class="post-filters">
-                    <button class="filter-btn active" onclick="CommunityModule.loadPosts('')">Todos</button>
-                    <button class="filter-btn" onclick="CommunityModule.loadPosts('message')">💬</button>
-                    <button class="filter-btn" onclick="CommunityModule.loadPosts('prayer')">🙏</button>
-                    <button class="filter-btn" onclick="CommunityModule.loadPosts('study')">📖</button>
-                    <button class="filter-btn" onclick="CommunityModule.loadPosts('testimony')">⭐</button>
+                <!-- Abas da Comunidade -->
+                <div class="community-tabs">
+                    <button class="community-tab-btn active" onclick="CommunityModule.switchSection('feed', this)">📰 Feed</button>
+                    <button class="community-tab-btn" onclick="CommunityModule.switchSection('friends', this)">🤝 Amigos</button>
+                    <button class="community-tab-btn" onclick="CommunityModule.switchSection('chat', this)">💬 Chat</button>
+                    <button class="community-tab-btn" onclick="CommunityModule.switchSection('verses', this)">📖 Versículos</button>
                 </div>
 
-                <!-- Criar Post -->
-                <div id="create-post-area" class="create-post-area hidden">
-                    <input type="text" id="post-title" class="sacred-input" placeholder="Título (opcional)" maxlength="100">
-                    <textarea id="post-content" class="sacred-input sacred-textarea" placeholder="Compartilhe uma mensagem, oração ou testemunho..." maxlength="2000"></textarea>
-                    <div class="post-form-footer">
-                        <select id="post-type" class="sacred-select">
-                            <option value="message">💬 Mensagem</option>
-                            <option value="prayer">🙏 Oração</option>
-                            <option value="study">📖 Estudo</option>
-                            <option value="testimony">⭐ Testemunho</option>
-                        </select>
-                        <button class="sacred-btn" onclick="CommunityModule.createPost()">✡ Publicar</button>
+                <div id="community-section-feed" class="community-pane">
+                    <!-- Filtros -->
+                    <div class="post-filters">
+                        <button class="filter-btn active" onclick="CommunityModule.loadPosts('')">Todos</button>
+                        <button class="filter-btn" onclick="CommunityModule.loadPosts('message')">💬</button>
+                        <button class="filter-btn" onclick="CommunityModule.loadPosts('prayer')">🙏</button>
+                        <button class="filter-btn" onclick="CommunityModule.loadPosts('study')">📖</button>
+                        <button class="filter-btn" onclick="CommunityModule.loadPosts('testimony')">⭐</button>
+                    </div>
+
+                    <!-- Criar Post -->
+                    <div id="create-post-area" class="create-post-area hidden">
+                        <input type="text" id="post-title" class="sacred-input" placeholder="Título (opcional)" maxlength="100">
+                        <textarea id="post-content" class="sacred-input sacred-textarea" placeholder="Compartilhe uma mensagem, oração ou testemunho..." maxlength="2000"></textarea>
+                        <div class="post-form-footer">
+                            <select id="post-type" class="sacred-select">
+                                <option value="message">💬 Mensagem</option>
+                                <option value="prayer">🙏 Oração</option>
+                                <option value="study">📖 Estudo</option>
+                                <option value="testimony">⭐ Testemunho</option>
+                            </select>
+                            <button class="sacred-btn" onclick="CommunityModule.createPost()">✡ Publicar</button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Posts -->
+                    <div id="posts-list" class="posts-list"></div>
+                </div>
+
+                <div id="community-section-friends" class="community-pane hidden">
+                    <div class="community-card-block">
+                        <h3>🔎 Encontrar irmãos na fé</h3>
+                        <div class="community-inline-form">
+                            <input type="text" id="friend-search-input" class="sacred-input" placeholder="Buscar por nome..." maxlength="50">
+                            <button class="btn-small" onclick="CommunityModule.searchUsers()">Buscar</button>
+                        </div>
+                        <div id="friend-search-results" class="community-list"></div>
+                    </div>
+
+                    <div class="community-card-block">
+                        <h3>📨 Pedidos recebidos</h3>
+                        <div id="friend-requests-list" class="community-list"></div>
+                    </div>
+
+                    <div class="community-card-block">
+                        <h3>🤝 Seus amigos</h3>
+                        <div id="friends-list" class="community-list"></div>
                     </div>
                 </div>
 
-                <!-- Lista de Posts -->
-                <div id="posts-list" class="posts-list"></div>
+                <div id="community-section-chat" class="community-pane hidden">
+                    <div class="community-card-block">
+                        <h3>💬 Chat entre amigos</h3>
+                        <div class="community-inline-form">
+                            <select id="chat-friend-select" class="sacred-select"></select>
+                            <button class="btn-small" onclick="CommunityModule.loadChat()">Abrir</button>
+                        </div>
+                        <div id="chat-messages" class="chat-messages"></div>
+                        <div class="community-inline-form" style="margin-top: 8px;">
+                            <input type="text" id="chat-message-input" class="sacred-input" placeholder="Escreva sua mensagem..." maxlength="1000">
+                            <button class="sacred-btn" onclick="CommunityModule.sendChatMessage()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="community-section-verses" class="community-pane hidden">
+                    <div class="community-card-block">
+                        <h3>📤 Compartilhar versículo</h3>
+                        <div class="community-inline-form">
+                            <input type="text" id="share-book" class="sacred-input" placeholder="Livro (ex: João)">
+                            <input type="number" id="share-chapter" class="sacred-input" placeholder="Cap" min="1" style="max-width: 90px;">
+                            <input type="number" id="share-verse" class="sacred-input" placeholder="Verso" min="1" style="max-width: 90px;">
+                        </div>
+                        <textarea id="share-message" class="sacred-input sacred-textarea" placeholder="Mensagem opcional sobre o versículo..."></textarea>
+                        <div class="post-form-footer">
+                            <select id="share-target" class="sacred-select"></select>
+                            <button class="sacred-btn" onclick="CommunityModule.shareVerse()">Compartilhar</button>
+                        </div>
+                    </div>
+
+                    <div class="community-card-block">
+                        <h3>🕊️ Feed de Versículos</h3>
+                        <div id="verse-shares-feed" class="community-list"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ═══════════════ TAB: BÍBLIA INTERLINEAR ═══════════════ -->
+        <div id="tab-bible" class="tab-content">
+            <section class="bible-section" style="padding-top: var(--spacing-md);">
+                <div class="section-header">
+                    <div class="ornament">─── ✡ ───</div>
+                    <h2>📖 Bíblia Interlinear</h2>
+                    <p class="bible-subtitle">Hebraico · Grego · Português · Inglês</p>
+                    <div class="ornament">─── ✡ ───</div>
+                </div>
+
+                <!-- Seletores de Livro / Capítulo -->
+                <div class="bible-controls">
+                    <select id="bible-book-select" class="bible-select"></select>
+                    <select id="bible-chapter-select" class="bible-select bible-select-chapter"></select>
+                </div>
+
+                <!-- Barra de ferramentas da Bíblia -->
+                <div class="bible-toolbar">
+                    <div class="bible-toolbar-left">
+                        <button class="bible-tool-btn" onclick="Bible.changeFontSize(-1)" title="Diminuir fonte">A<small>−</small></button>
+                        <span id="bible-font-label" class="bible-font-label">16px</span>
+                        <button class="bible-tool-btn" onclick="Bible.changeFontSize(1)" title="Aumentar fonte">A<big>+</big></button>
+                        <button class="bible-tool-btn" onclick="Bible.toggleSepia()" id="bible-sepia-btn" title="Modo sépia">🌙</button>
+                    </div>
+                    <div class="bible-toolbar-right">
+                        <button class="bible-tool-btn" onclick="togglePanel('bible-book-index')" title="Índice de livros">📑 Índice</button>
+                        <button class="bible-tool-btn" id="bible-tts-btn" onclick="Bible.toggleTTS()" title="Ouvir capítulo">🔊</button>
+                        <button class="bible-tool-btn" onclick="Bible.openJumpPanel()" title="Ir para versículo">📍</button>
+                        <button class="bible-tool-btn" id="bible-bookmarks-btn" onclick="Bible.openBookmarksDrawer()" title="Meus Marcadores">🔖 <span id="bible-bookmark-count" class="bible-bk-badge"></span></button>
+                        <button class="bible-tool-btn" id="bible-reading-mode-btn" onclick="Bible.toggleReadingMode()" title="Modo leitura">📖 Foco</button>
+                    </div>
+                </div>
+
+                <!-- Painel de "Ir para versículo" -->
+                <div id="bible-jump-panel" class="bible-jump-panel" style="display:none">
+                    <div class="bible-jump-inner">
+                        <input id="bible-jump-input" class="bible-search-input" type="text" placeholder="Ex: João 3:16, Gênesis 1:1" maxlength="40" autocomplete="off">
+                        <button onclick="Bible.jumpToRef()" class="bible-search-btn">Ir ▶</button>
+                        <button onclick="Bible.closeJumpPanel()" class="bible-search-clear-btn">✕</button>
+                    </div>
+                    <div class="bible-hist-label">🕐 Lidos recentemente:</div>
+                    <div id="bible-history-chips" class="bible-history-chips"></div>
+                </div>
+
+                <!-- Versículo Diário -->
+                <div class="bible-daily-card">
+                    <div class="bible-daily-head">☀️ Versículo do Dia</div>
+                    <p id="bible-daily-verse-text" class="bible-daily-text">Carregando versículo diário...</p>
+                    <div class="bible-daily-footer">
+                        <span id="bible-daily-verse-ref" class="bible-daily-ref">--</span>
+                        <button id="bible-daily-open-btn" class="bible-daily-open-btn">Abrir contexto</button>
+                    </div>
+                </div>
+
+                <!-- Pesquisa de Versículos -->
+                <div class="bible-search-card">
+                    <div class="bible-search-head">🔎 Pesquisa de Versículos</div>
+                    <div class="bible-search-controls">
+                        <input id="bible-search-input" class="bible-search-input" type="text" maxlength="80" placeholder="Ex: guarda-me como a menina dos teus olhos">
+                        <button id="bible-search-btn" class="bible-search-btn">Pesquisar</button>
+                        <button id="bible-search-clear-btn" class="bible-search-clear-btn">Limpar</button>
+                    </div>
+                    <p id="bible-search-status" class="bible-search-status"></p>
+                    <div id="bible-search-results" class="bible-search-results"></div>
+                </div>
+
+                <!-- Seletores de Tradução -->
+                <div class="bible-translation-selectors">
+                    <div class="bible-trans-row">
+                        <label class="bible-layer-toggle">
+                            <input type="checkbox" id="layer-original" checked onchange="Bible.toggleLayer('original', this.checked)">
+                            <span class="layer-chip layer-chip-original">✡ Original</span>
+                        </label>
+                        <select id="bible-select-original" class="bible-select bible-select-trans"></select>
+                    </div>
+                    <div class="bible-trans-row">
+                        <label class="bible-layer-toggle">
+                            <input type="checkbox" id="layer-translit" checked onchange="Bible.toggleLayer('translit', this.checked)">
+                            <span class="layer-chip layer-chip-translit">𝑎𝑏 Translit.</span>
+                        </label>
+                        <select id="bible-select-translit" class="bible-select bible-select-trans"></select>
+                    </div>
+                    <div class="bible-trans-row">
+                        <label class="bible-layer-toggle">
+                            <input type="checkbox" id="layer-pt" checked onchange="Bible.toggleLayer('pt', this.checked)">
+                            <span class="layer-chip layer-chip-pt">🇧🇷 Português</span>
+                        </label>
+                        <select id="bible-select-pt" class="bible-select bible-select-trans"></select>
+                    </div>
+                    <div class="bible-trans-row">
+                        <label class="bible-layer-toggle">
+                            <input type="checkbox" id="layer-en" checked onchange="Bible.toggleLayer('en', this.checked)">
+                            <span class="layer-chip layer-chip-en">🇺🇸 Inglês</span>
+                        </label>
+                        <select id="bible-select-en" class="bible-select bible-select-trans"></select>
+                    </div>
+                </div>
+
+                <!-- Navegação -->
+                <div class="bible-nav">
+                    <button id="bible-prev" class="bible-nav-btn">◀ Anterior</button>
+                    <span id="bible-current-ref" class="bible-ref">Gênesis 1</span>
+                    <button id="bible-next" class="bible-nav-btn">Próximo ▶</button>
+                </div>
+
+                <!-- Versículos -->
+                <div id="bible-verses" class="bible-verses"></div>
+
+                <!-- Barra de progresso do livro -->
+                <div class="bible-progress-bar-wrap" id="bible-progress-wrap" title="Progresso no livro atual">
+                    <div class="bible-progress-bar" id="bible-progress-bar"></div>
+                    <span class="bible-progress-label" id="bible-progress-label"></span>
+                </div>
+
+                <!-- Navegação inferior -->
+                <div class="bible-nav bible-nav-bottom">
+                    <button onclick="Bible.prevChapter()" class="bible-nav-btn">◀ Anterior</button>
+                    <button onclick="Bible.nextChapter()" class="bible-nav-btn">Próximo ▶</button>
+                </div>
+
+                <!-- Download Offline -->
+                <div class="bible-offline-section">
+                    <div class="ornament">─── ✡ ───</div>
+                    <h3>📥 Modo Offline</h3>
+                    <p class="bible-offline-desc">Baixe as Bíblias para ler sem internet. Escolha as traduções desejadas:</p>
+
+                    <div class="bible-offline-toolbar">
+                        <button id="bible-sync-btn" class="bible-preset-btn">🔄 Sincronizar Offline</button>
+                        <span id="bible-offline-summary" class="bible-offline-summary">Estoque local: verificando...</span>
+                    </div>
+
+                    <div id="bible-arsenal-stock" class="bible-arsenal-stock"></div>
+
+                    <div class="bible-offline-presets">
+                        <button class="bible-preset-btn" onclick="BibleOffline.selectPreset('essencial')">⭐ Essencial (~25 MB)</button>
+                        <button class="bible-preset-btn" onclick="BibleOffline.selectPreset('completo')">📚 Todas (~359 MB)</button>
+                        <button class="bible-preset-btn bible-preset-clear" onclick="BibleOffline.clearCache()">🗑️ Limpar Cache</button>
+                    </div>
+
+                    <div id="bible-offline-list" class="bible-offline-list"></div>
+
+                    <div id="bible-offline-progress" class="bible-offline-progress" style="display:none">
+                        <div class="bible-progress-bar-bg">
+                            <div id="bible-progress-bar" class="bible-progress-bar"></div>
+                        </div>
+                        <p id="bible-progress-text" class="bible-progress-text">Preparando...</p>
+                    </div>
+
+                    <button id="bible-download-btn" class="bible-download-btn" onclick="BibleOffline.startDownload()">
+                        📥 Baixar Selecionadas
+                    </button>
+                </div>
+            </section>
+
+            <!-- ── Overlay de Modo Foco (Fullscreen) ────────────────── -->
+            <div id="bible-focus-overlay" class="bible-focus-overlay" style="display:none">
+                <!-- Barra superior: livro + capítulo + sepia + fechar -->
+                <div class="bible-focus-topbar">
+                    <div class="bible-focus-nav-selects">
+                        <select id="focus-book-select" class="focus-select" onchange="Bible.focusChangeBook(this.value)"></select>
+                        <select id="focus-chapter-select" class="focus-select" onchange="Bible.focusChangeChapter(this.value)"></select>
+                    </div>
+                    <div class="bible-focus-topbar-right">
+                        <button class="bible-focus-ctrl-btn" onclick="Bible.toggleSepia()" id="bible-focus-sepia-btn" title="Modo sépia">🌙</button>
+                        <button class="bible-focus-ctrl-btn" onclick="Bible.toggleTTS()" id="bible-focus-tts-btn" title="Ler em voz alta">🔊</button>
+                        <button class="bible-focus-close-btn" onclick="Bible.closeFocusMode()" title="Fechar modo foco">✕</button>
+                    </div>
+                </div>
+                <!-- Linha de seletores de tradução -->
+                <div class="bible-focus-layers">
+                    <label class="focus-layer-lbl"><input type="checkbox" id="focus-layer-original" checked onchange="Bible.toggleLayer('original',this.checked)"><span>✡ Orig</span></label>
+                    <select id="focus-select-original" class="focus-trans-select" onchange="Bible.focusChangeTrans('original',this.value)"></select>
+                    <label class="focus-layer-lbl"><input type="checkbox" id="focus-layer-translit" checked onchange="Bible.toggleLayer('translit',this.checked)"><span>𝑎𝑏 Translit</span></label>
+                    <select id="focus-select-translit" class="focus-trans-select" onchange="Bible.focusChangeTrans('translit',this.value)"></select>
+                    <label class="focus-layer-lbl"><input type="checkbox" id="focus-layer-pt" checked onchange="Bible.toggleLayer('pt',this.checked)"><span>🇧🇷 PT</span></label>
+                    <select id="focus-select-pt" class="focus-trans-select" onchange="Bible.focusChangeTrans('pt',this.value)"></select>
+                    <label class="focus-layer-lbl"><input type="checkbox" id="focus-layer-en" checked onchange="Bible.toggleLayer('en',this.checked)"><span>🇺🇸 EN</span></label>
+                    <select id="focus-select-en" class="focus-trans-select" onchange="Bible.focusChangeTrans('en',this.value)"></select>
+                </div>
+                <!-- Área de versículos -->
+                <div id="bible-focus-verses" class="bible-focus-verses"></div>
+                <!-- Rodapé de navegação -->
+                <div class="bible-focus-footer">
+                    <button class="bible-focus-nav-btn" onclick="Bible.prevChapter()">◀ Anterior</button>
+                    <span id="bible-focus-ref" class="bible-focus-ref">Gênesis 1</span>
+                    <button class="bible-focus-nav-btn" onclick="Bible.nextChapter()">Próximo ▶</button>
+                </div>
+            </div>
+
+            <!-- ── Overlay + Drawer de Marcadores ──────────────────── -->
+            <div id="bible-bookmarks-overlay" class="bible-bookmarks-overlay" onclick="Bible.closeBookmarksDrawer()" style="display:none"></div>
+            <div id="bible-bookmarks-drawer" class="bible-bookmarks-drawer" style="display:none">
+                <div class="bible-bookmarks-header">
+                    <h3>🔖 Meus Marcadores</h3>
+                    <button onclick="Bible.closeBookmarksDrawer()" class="bible-bk-close-btn" title="Fechar">✕</button>
+                </div>
+                <div id="bible-bookmarks-list" class="bible-bookmarks-list"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ TAB: ESTUDOS ═══════════════ -->
+        <div id="tab-studies" class="tab-content">
+            <section class="studies-section" style="padding-top: var(--spacing-md);">
+                <div class="section-header">
+                    <div class="ornament">─── ✡ ───</div>
+                    <h2>🧾 Estudos e Citações</h2>
+                    <p class="bible-subtitle">Pesquisa por tema, livro e palavra-chave</p>
+                    <div class="ornament">─── ✡ ───</div>
+                </div>
+
+                <div class="studies-controls">
+                    <select id="studies-theme" class="sacred-select" onchange="StudiesModule.applyFilters()">
+                        <option value="">Todos os temas</option>
+                    </select>
+                    <select id="studies-book" class="sacred-select" onchange="StudiesModule.applyFilters()">
+                        <option value="">Todos os livros</option>
+                    </select>
+                    <input id="studies-search" class="sacred-input" type="text" placeholder="Buscar por palavra-chave..." oninput="StudiesModule.applyFilters()">
+                </div>
+
+                <div id="studies-summary" class="studies-summary">Carregando estudos...</div>
+                <div id="studies-list" class="studies-list"></div>
+            </section>
+
+            <!-- ── Estudos da Comunidade ── -->
+            <section class="studies-section" style="margin-top: 24px; padding-bottom: var(--spacing-xl);">
+                <div class="section-header">
+                    <div class="ornament">─── ✡ ───</div>
+                    <h2>👥 Estudos da Comunidade</h2>
+                    <p class="bible-subtitle">Reflexões bíblicas compartilhadas por peregrinos</p>
+                    <div class="ornament">─── ✡ ───</div>
+                </div>
+
+                <div style="text-align:center;margin-bottom:16px">
+                    <button class="sacred-btn" onclick="StudiesModule.showCreateStudyModal()">✏️ Publicar meu estudo</button>
+                </div>
+
+                <input type="search" id="community-studies-search" class="sacred-input" placeholder="🔍 Buscar estudos da comunidade..." oninput="StudiesModule.filterCommunityStudies()" style="margin-bottom:12px">
+
+                <div id="community-studies-list" class="studies-list">
+                    <p style="text-align:center;color:var(--text-muted);padding:16px">Carregando estudos da comunidade...</p>
+                </div>
+                <div style="text-align:center;margin-top:12px">
+                    <button id="community-studies-more" class="btn-small" style="display:none" onclick="StudiesModule.loadCommunityStudies(window._communityStudiesPage = (window._communityStudiesPage||1)+1)">Carregar mais</button>
+                </div>
             </section>
         </div>
 
@@ -426,6 +749,8 @@
     </div>
 
     <!-- ===================== SCRIPTS ===================== -->    
+    <!-- URL do backend Flask -->
+    <script>window.BACKEND_URL = 'https://bussola-jerusalem-api.onrender.com';</script>
     <!-- QRCode.js (Geração de QR Code para PIX) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
@@ -436,14 +761,22 @@
     
     <!-- Módulos do App -->
     <script src="js/geolocation.js"></script>
+    <!-- Google Identity Services (para Sign-In com Google) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <script src="js/compass.js"></script>
     <script src="js/maps.js"></script>
     <script src="js/pix.js"></script>
     <script src="js/music.js"></script>
     <script src="js/community.js"></script>
+    <script src="js/bible.js"></script>
+    <script src="js/studies.js"></script>
     <script src="js/app.js"></script>
 
     <!-- Service Worker (PWA) — registra e detecta atualizações -->
+        <!-- FEATURE 1-4: Histórico, Favoritos, Índice, Dark Mode -->
+        <script src="js/bible-features.js"></script>
+        <script src="js/bible-ui-injector.js"></script>
     <script>
         if ('serviceWorker' in navigator && !window.Capacitor) {
             window.addEventListener('load', () => {

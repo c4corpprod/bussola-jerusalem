@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a0a00">
+    <meta name="description" content="Bússola Sagrada v2.0 — Aponte para Jerusalém com Google Maps. Saiba sempre onde está a Cidade Santa.">
+    <meta name="author" content="Marcos Fernando - C4 Corporation">
+    
+    <title>🧭 Bússola para Jerusalém v2.0</title>
+    
+    <!-- Google Fonts - Fontes com estilo hebraico/antigo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/img/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/img/icon-192.png">
+</head>
+<body>
+    <!-- ===================== TELA DE CARREGAMENTO ===================== -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <div class="menorah-icon">🕎</div>
+            <h1 class="splash-title">בּוּסוּלָה</h1>
+            <h2 class="splash-subtitle">Bússola para Jerusalém</h2>
+            <div class="splash-version">v2.0 — Google Maps Edition</div>
+            <div class="splash-verse">
+                <p>"Se eu me esquecer de ti, ó Jerusalém,<br>que a minha mão direita se esqueça da sua destreza."</p>
+                <span>— Salmo 137:5</span>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-fill"></div>
+            </div>
+            <p class="loading-text">Preparando a bússola sagrada...</p>
+        </div>
+    </div>
+
+    <!-- ===================== APLICATIVO PRINCIPAL ===================== -->
+    <div id="app" class="app hidden">
+        
+        <!-- CABEÇALHO -->
+        <header class="app-header">
+            <div class="header-ornament top-ornament">✦ ✦ ✦</div>
+            <h1 class="app-title">🧭 Bússola para Jerusalém</h1>
+            <p class="app-subtitle">יְרוּשָׁלַיִם — A Cidade Santa</p>
+            <div class="app-version-badge">v2.0</div>
+            <div class="header-ornament bottom-ornament">─── ✡ ───</div>
+        </header>
+
+        <!-- BÚSSOLA 3D PRINCIPAL -->
+        <section id="compass-section" class="compass-section">
+            <div class="compass-container">
+                <!-- Anel externo decorativo -->
+                <div class="compass-outer-ring">
+                    <div class="compass-cardinal" data-dir="N">N</div>
+                    <div class="compass-cardinal" data-dir="E">E</div>
+                    <div class="compass-cardinal" data-dir="S">S</div>
+                    <div class="compass-cardinal" data-dir="W">W</div>
+                </div>
+                
+                <!-- Rosa dos ventos -->
+                <div id="compass-rose" class="compass-rose">
+                    <!-- Marcações de graus -->
+                    <div class="degree-marks"></div>
+                    
+                    <!-- Disco da bússola que gira -->
+                    <div id="compass-disk" class="compass-disk">
+                        <svg viewBox="0 0 300 300" class="compass-svg">
+                            <!-- Círculos decorativos -->
+                            <circle cx="150" cy="150" r="145" fill="none" stroke="#c4a35a" stroke-width="2" opacity="0.5"/>
+                            <circle cx="150" cy="150" r="130" fill="none" stroke="#c4a35a" stroke-width="1" opacity="0.3"/>
+                            <circle cx="150" cy="150" r="30" fill="none" stroke="#c4a35a" stroke-width="1" opacity="0.5"/>
+                            
+                            <!-- Linhas cardinais -->
+                            <line x1="150" y1="20" x2="150" y2="60" stroke="#c4a35a" stroke-width="2" opacity="0.4"/>
+                            <line x1="150" y1="240" x2="150" y2="280" stroke="#c4a35a" stroke-width="2" opacity="0.4"/>
+                            <line x1="20" y1="150" x2="60" y2="150" stroke="#c4a35a" stroke-width="2" opacity="0.4"/>
+                            <line x1="240" y1="150" x2="280" y2="150" stroke="#c4a35a" stroke-width="2" opacity="0.4"/>
+                            
+                            <!-- Letras hebraicas nos pontos cardinais -->
+                            <text x="150" y="48" text-anchor="middle" fill="#c4a35a" font-size="16" font-family="serif">צ</text>
+                            <text x="265" y="155" text-anchor="middle" fill="#c4a35a" font-size="16" font-family="serif">מ</text>
+                            <text x="150" y="270" text-anchor="middle" fill="#c4a35a" font-size="16" font-family="serif">ד</text>
+                            <text x="38" y="155" text-anchor="middle" fill="#c4a35a" font-size="16" font-family="serif">מע</text>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- SETA 3D APONTANDO PARA JERUSALÉM -->
+                <div id="jerusalem-arrow" class="jerusalem-arrow">
+                    <div class="arrow-3d">
+                        <div class="arrow-blade"></div>
+                        <div class="arrow-blade-shadow"></div>
+                        <div class="arrow-tail"></div>
+                    </div>
+                    <div class="arrow-center-dot">✡</div>
+                </div>
+
+                <!-- Indicador de Jerusalém -->
+                <div class="jerusalem-indicator">
+                    <span class="jerusalem-label">יְרוּשָׁלַיִם</span>
+                </div>
+            </div>
+
+            <!-- Informações de navegação -->
+            <div class="nav-info">
+                <div class="info-card">
+                    <span class="info-icon">📍</span>
+                    <span class="info-label">Direção</span>
+                    <span id="bearing-value" class="info-value">---°</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-icon">🛤️</span>
+                    <span class="info-label">Distância</span>
+                    <span id="distance-value" class="info-value">--- km</span>
+                </div>
+                <div class="info-card">
+                    <span class="info-icon">🧭</span>
+                    <span class="info-label">Sua Direção</span>
+                    <span id="heading-value" class="info-value">---°</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO DO MAPA GOOGLE MAPS -->
+        <section id="map-section" class="map-section">
+            <div class="section-header">
+                <div class="ornament">─── ✦ ───</div>
+                <h2>🗺️ Mapa — Sua Posição até Jerusalém</h2>
+                <p class="section-desc-small">Powered by Google Maps</p>
+                <div class="ornament">─── ✦ ───</div>
+            </div>
+            <!-- Controles do mapa -->
+            <div class="map-controls">
+                <button class="map-ctrl-btn" onclick="GoogleMapsModule.setMapType('roadmap')" title="Mapa">🗺️</button>
+                <button class="map-ctrl-btn" onclick="GoogleMapsModule.setMapType('satellite')" title="Satélite">🛰️</button>
+                <button class="map-ctrl-btn" onclick="GoogleMapsModule.setMapType('hybrid')" title="Híbrido">🌐</button>
+                <button class="map-ctrl-btn" onclick="GoogleMapsModule.setMapType('terrain')" title="Terreno">⛰️</button>
+                <button class="map-ctrl-btn active" onclick="GoogleMapsModule.fitBothPoints()" title="Ver ambos">📌</button>
+                <button class="map-ctrl-btn" onclick="GoogleMapsModule.centerOnUser()" title="Minha posição">📍</button>
+                <button class="map-ctrl-btn" onclick="GoogleMapsModule.centerOnJerusalem()" title="Jerusalém">✡</button>
+                <button class="map-ctrl-btn" onclick="GoogleMapsModule.toggleStreetView()" title="Street View">🚶</button>
+            </div>
+            <div id="map-container" class="map-container">
+                <div id="map" class="map"></div>
+            </div>
+            <div class="map-legend">
+                <span class="legend-item"><span class="legend-dot you"></span> Sua posição</span>
+                <span class="legend-item"><span class="legend-dot jerusalem"></span> Jerusalém</span>
+                <span class="legend-item"><span class="legend-dot route"></span> Rota geodésica</span>
+            </div>
+            <!-- Info do trajeto Google -->
+            <div id="route-info" class="route-info hidden">
+                <div class="route-info-card">
+                    <span class="route-icon">🚗</span>
+                    <div class="route-data">
+                        <span class="route-label">Distância por rota</span>
+                        <span id="route-distance" class="route-value">---</span>
+                    </div>
+                </div>
+                <div class="route-info-card">
+                    <span class="route-icon">⏱️</span>
+                    <div class="route-data">
+                        <span class="route-label">Tempo estimado</span>
+                        <span id="route-duration" class="route-value">---</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO SOBRE JERUSALÉM -->
+        <section class="jerusalem-info-section">
+            <div class="section-header">
+                <div class="ornament">─── ✦ ───</div>
+                <h2>🕊️ Sobre Jerusalém</h2>
+                <div class="ornament">─── ✦ ───</div>
+            </div>
+            <div class="jerusalem-info-content">
+                <div class="scroll-container">
+                    <p class="hebrew-quote">"כִּי מִצִּיּוֹן תֵּצֵא תוֹרָה וּדְבַר־ה' מִירוּשָׁלָיִם"</p>
+                    <p class="quote-translation">"Porque de Sião sairá a lei, e a palavra do Senhor, de Jerusalém." — Isaías 2:3</p>
+                    
+                    <div class="info-text">
+                        <p><strong>Jerusalém</strong> (יְרוּשָׁלַיִם - Yerushalayim) é a cidade mais sagrada do mundo, 
+                        reverenciada por judeus, cristãos e muçulmanos. Localizada nas montanhas da Judeia, 
+                        entre o Mar Mediterrâneo e o Mar Morto, ela é o coração espiritual da humanidade.</p>
+                        
+                        <p>Coordenadas: <strong>31°46'N, 35°13'E</strong><br>
+                        Altitude: <strong>754 metros</strong> acima do nível do mar</p>
+                        
+                        <p>É para este ponto sagrado que a sua bússola sempre apontará. ✡</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO COMUNIDADE -->
+        <section id="community-section" class="community-section">
+            <div class="section-header">
+                <div class="ornament">─── ✦ ───</div>
+                <h2>👥 Comunidade Sagrada</h2>
+                <p class="section-desc">Compartilhe mensagens, estudos e orações com irmãos ao redor do mundo</p>
+                <div class="ornament">─── ✦ ───</div>
+            </div>
+
+            <!-- Barra de autenticação / perfil -->
+            <div id="community-auth-area" class="community-auth-area"></div>
+
+            <!-- Salmo do dia -->
+            <div id="daily-psalm" class="daily-psalm">
+                <div class="psalm-loading">🕎 Carregando salmo...</div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="post-filters">
+                <button class="filter-btn active" onclick="CommunityModule.loadPosts(1, '')">Todos</button>
+                <button class="filter-btn" onclick="CommunityModule.loadPosts(1, 'message')">💬 Mensagens</button>
+                <button class="filter-btn" onclick="CommunityModule.loadPosts(1, 'study')">📖 Estudos</button>
+                <button class="filter-btn" onclick="CommunityModule.loadPosts(1, 'prayer')">🙏 Orações</button>
+                <button class="filter-btn" onclick="CommunityModule.loadPosts(1, 'testimony')">⭐ Testemunhos</button>
+            </div>
+
+            <!-- Criar Post -->
+            <div id="create-post-area" class="create-post-area hidden">
+                <div class="create-post-box">
+                    <select id="post-type" class="sacred-input sacred-select">
+                        <option value="message">💬 Mensagem</option>
+                        <option value="study">📖 Estudo Bíblico</option>
+                        <option value="prayer">🙏 Pedido de Oração</option>
+                        <option value="testimony">⭐ Testemunho</option>
+                    </select>
+                    <input type="text" id="post-title" class="sacred-input" placeholder="Título (opcional)" maxlength="200">
+                    <textarea id="post-content" class="sacred-input sacred-textarea" 
+                              placeholder="Escreva sua mensagem para a comunidade..." maxlength="2000" rows="4"></textarea>
+                    <button class="sacred-btn" onclick="CommunityModule.createPost()">
+                        ✡ Publicar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lista de Posts -->
+            <div id="posts-list" class="posts-list">
+                <div class="loading-posts">🕎 Carregando mensagens da comunidade...</div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO DE DOAÇÃO PIX -->
+        <section id="donation-section" class="donation-section">
+            <div class="section-header">
+                <div class="ornament">─── ✦ ───</div>
+                <h2>💛 Apoie Este Projeto</h2>
+                <div class="ornament">─── ✦ ───</div>
+            </div>
+            <div class="donation-content">
+                <p class="donation-text">Se este aplicativo abençoou sua vida, considere fazer uma doação 
+                para manter o projeto ativo e ajudar mais pessoas a encontrar a direção da Cidade Santa.</p>
+                
+                <div class="pix-container">
+                    <div class="pix-icon">📱</div>
+                    <h3>Doe via PIX</h3>
+                    <div class="pix-key-box">
+                        <span class="pix-label">Chave PIX (E-mail):</span>
+                        <span id="pix-key" class="pix-key">ifoxnando@dbzmail.com</span>
+                        <button id="copy-pix-btn" class="copy-pix-btn" onclick="copyPixKey()">📋 Copiar Chave</button>
+                    </div>
+                    <div id="pix-qrcode" class="pix-qrcode">
+                        <canvas id="pix-qr-canvas"></canvas>
+                    </div>
+                    <div class="donation-values">
+                        <p>Sugestão de valores:</p>
+                        <div class="value-buttons">
+                            <button class="value-btn" onclick="selectDonation(5)">R$ 5</button>
+                            <button class="value-btn" onclick="selectDonation(10)">R$ 10</button>
+                            <button class="value-btn" onclick="selectDonation(25)">R$ 25</button>
+                            <button class="value-btn" onclick="selectDonation(50)">R$ 50</button>
+                            <button class="value-btn" onclick="selectDonation(100)">R$ 100</button>
+                        </div>
+                        <input type="number" id="custom-value" class="custom-value-input" placeholder="Outro valor (R$)" min="1">
+                    </div>
+                    <p class="pix-instruction">Abra o app do seu banco → PIX → Colar chave → Enviar 💛</p>
+                </div>
+                
+                <div class="donation-thanks">
+                    <p>🕎 "Quem dá ao pobre empresta ao Senhor" — Provérbios 19:17</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RODAPÉ -->
+        <footer class="app-footer">
+            <div class="footer-ornament">─── ✡ ───</div>
+            <div class="footer-content">
+                <p class="copyright">© 2026 Marcos Fernando — C4 Corporation</p>
+                <p class="copyright-sub">Todos os direitos reservados — v2.0</p>
+                <div class="footer-contacts">
+                    <a href="mailto:c4corpbeats@gmail.com" class="footer-link">📧 c4corpbeats@gmail.com</a>
+                    <a href="https://chat.whatsapp.com/C9KfyK7InB00wJ2jRFDtOr?mode=gi_c" target="_blank" class="footer-link">💬 WhatsApp</a>
+                </div>
+                <p class="footer-verse">"Orai pela paz de Jerusalém" — Salmo 122:6</p>
+            </div>
+            <div class="footer-ornament">─── ✦ ───</div>
+        </footer>
+    </div>
+
+    <!-- ===================== MODAL DE PERMISSÃO ===================== -->
+    <div id="permission-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-icon">🧭</div>
+            <h2>Permissão Necessária</h2>
+            <p>Para apontar para Jerusalém, precisamos acessar:</p>
+            <ul>
+                <li>📍 Sua localização (GPS)</li>
+                <li>🧭 Sensor de orientação (Bússola)</li>
+            </ul>
+            <button id="grant-permission-btn" class="sacred-btn" onclick="requestAllPermissions()">
+                ✡ Conceder Permissão
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================== SCRIPTS ===================== -->
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyALXMsYP0AR7zwfOQx7w81AIEZREQSlVDY&libraries=geometry,places&callback=onGoogleMapsReady" async defer></script>
+    
+    <!-- Módulos do App -->
+    <script src="js/geolocation.js"></script>
+    <script src="js/compass.js"></script>
+    <script src="js/maps.js"></script>
+    <script src="js/pix.js"></script>
+    <script src="js/music.js"></script>
+    <script src="js/community.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

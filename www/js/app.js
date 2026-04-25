@@ -168,6 +168,12 @@ const App = (() => {
             console.log('👥 Módulo da comunidade iniciado');
         }
 
+        // 10. Inicializa módulo de estudos
+        if (typeof StudiesModule !== 'undefined') {
+            StudiesModule.init();
+            console.log('🧾 Módulo de estudos iniciado');
+        }
+
         isInitialized = true;
         console.log('✅ Todos os sistemas iniciados!');
     }
@@ -311,6 +317,12 @@ function switchTab(tabId) {
     // Carrega posts ao abrir comunidade
     if (tabId === 'tab-community' && typeof CommunityModule !== 'undefined') {
         CommunityModule.loadPosts();
+    }
+
+    // Reaplica filtros ao abrir estudos + carrega estudos da comunidade
+    if (tabId === 'tab-studies' && typeof StudiesModule !== 'undefined') {
+        StudiesModule.applyFilters();
+        StudiesModule.loadCommunityStudies(1);
     }
 }
 

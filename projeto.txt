@@ -1,0 +1,511 @@
+================================================================
+  BÚSSOLA PARA JERUSALÉM — Descrição Detalhada do Projeto
+  © Marcos Fernando · C4 Corporation
+  Contato : c4corpbeats@gmail.com
+  WhatsApp: https://chat.whatsapp.com/C9KfyK7InB00wJ2jRFDtOr
+  Versão  : Service Worker v13 · Atualizado: 24/04/2026
+================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. O QUE É
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Aplicativo espiritual sagrado de código aberto com tema hebraico
+antigo. Combina três funções principais:
+
+  (a) Bússola digital 3D apontando sempre para Jerusalém
+      Coordenadas alvo: 31.7683°N, 35.2137°E
+      Usa DeviceOrientation API + GPS do dispositivo
+
+  (b) Bíblia Interlinear com 84 traduções
+      Hebraico · Grego · Aramaico · Latim · Transliterações
+      Português (18 versões) · Inglês (25 versões) · Outras
+
+  (c) Comunidade social cristã
+      Posts · Curtidas · Comentários · Notificações em tempo real
+
+Plataformas suportadas: Android (APK), Web (PWA), Desktop (Electron)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  2. ABAS DO APLICATIVO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. 🧭 BÚSSOLA
+     Bússola 3D animada com Estrela de Davi no centro.
+     Aponta para Jerusalém usando bússola magnética + GPS.
+     Mostra: direção em graus, distância em km/mi, sua direção atual.
+     Vibração ao alinhar com Jerusalém (±5°).
+     Indicador de calibração (movimento em "8").
+     Versículo hebraico animado no topo.
+     Salmo aleatório do dia abaixo da bússola.
+
+  2. 🗺️ MAPA
+     Google Static Maps API com marcador na localização do usuário.
+     Rota visual até Jerusalém.
+     Coordenadas do usuário exibidas.
+
+  3. 👥 COMUNIDADE
+     Feed de posts com scroll infinito.
+     Curtir / descurtir com animação otimista.
+     Comentários em posts.
+     Login por e-mail (token 6 dígitos via SMTP) ou Google OAuth.
+     Perfis com avatar emoji + bio editável.
+     Notificações em tempo real (polling a cada 30s).
+     Modal de notificações com marcação de lida.
+     Pesquisa de estudos bíblicos.
+     Compartilhamento de versículos bíblicos como posts.
+
+  4. 📖 BÍBLIA INTERLINEAR
+     (Detalhada na seção 4 abaixo)
+
+  5. 🧾 ESTUDOS
+     Estudos bíblicos temáticos.
+     Pesquisa por título/tema.
+
+  6. 💛 APOIAR
+     Doação via PIX com QR Code gerado dinamicamente (QRCode.js).
+     Chave PIX do autor.
+     Mensagem de agradecimento.
+
+  7. ⚙️ OPÇÕES
+     Configurações gerais do aplicativo.
+     Tema claro/escuro.
+     Configurações de GPS e permissões.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  3. BÍBLIA INTERLINEAR — DETALHE COMPLETO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3.1 DADOS
+---------
+  84 traduções · 67 livros por tradução · ~359 MB no total
+  Formato: JSON (1 arquivo por livro por tradução)
+  Caminho: www/data/bibles/<SIGLA>/<numero_do_livro>.json
+
+  Livros cobertos:
+    Cânon protestante  : 66 livros (Gênesis–Apocalipse)
+    Deuterocanônicos   : livros 67–88 (Tobit, Judite, Macabeus, etc.)
+    Apócrifos/Extras   : disponíveis em algumas traduções específicas
+
+3.2 LISTA COMPLETA DAS 84 TRADUÇÕES
+------------------------------------
+
+  HEBRAICO (Texto Massorético / AT)
+    WLC       — Westminster Leningrad Codex (base do AT moderno)
+    WLCa      — WLC com acentos completos
+    WLCC      — WLC Consonantal (sem vogais massoréticas)
+    WLCC_TRANSLIT — Transliteração do WLCC
+    WLC_TRANSLIT  — Transliteração do WLC
+    HAC       — Aleppo Codex (manuscrito mais antigo completo)
+    HAC_TRANSLIT  — Transliteração do HAC
+    OL        — Old Latin (Vetus Latina, AT)
+
+  GREGO — Antigo Testamento (Septuaginta)
+    LXX       — Septuaginta (tradução grega do AT, séc. III a.C.)
+    LXX_TRANSLIT  — Transliteração do LXX
+    LXXE      — Septuaginta em Inglês (Brenton)
+
+  GREGO — Novo Testamento
+    SBLGNT    — Society of Biblical Literature Greek NT
+    SBLGNT_TRANSLIT — Transliteração do SBLGNT
+    BYZ       — Textus Receptus / Byzantine Majority Text
+    BYZ_TRANSLIT    — Transliteração do BYZ
+    TISCH     — Tischendorf 8ª edição
+    NTGT      — NT Greek Text (aparato crítico)
+    DHNT      — Diodati Hebraic NT (grego)
+    DHNT_TRANSLIT   — Transliteração do DHNT
+    TR        — Textus Receptus clássico
+    TR_TRANSLIT     — Transliteração do TR
+
+  ARAMAICO
+    PESHITTA        — Peshitta Aramaica (NT canônico siríaco)
+    PESHITTA_TRANSLIT — Transliteração da Peshitta
+    TARGUM_ONKELOS  — Targum Onkelos (AT em aramaico babilônico)
+    TARGUM_TRANSLIT — Transliteração do Targum
+
+  LATIM
+    VULG      — Vulgata de São Jerônimo (séc. IV d.C.)
+    VULG_TRANSLIT   — Transliteração da Vulgata
+    DRB       — Douay-Rheims Bible (tradução inglesa da Vulgata)
+
+  PORTUGUÊS (18 versões)
+    ACF11     — Almeida Corrigida Fiel (2011)
+    ALM21     — Almeida Século 21
+    ARA       — Almeida Revisada e Atualizada ← padrão do app
+    ARC09     — Almeida Revisada e Corrigida (2009)
+    CNBB      — Bíblia da CNBB (Conferência Nacional dos Bispos)
+    KJA       — King James em português arcaico (Almeida 1748)
+    LBP       — Linguagem de Hoje (SBB)
+    MENS      — Mensagem em Português
+    NAA       — Nova Almeida Atualizada
+    NBV07     — Nova Bíblia Viva (2007)
+    NVIPT     — Nova Versão Internacional PT
+    NVT       — Nova Versão Transformadora
+    NTLH      — Nova Tradução na Linguagem de Hoje
+    NR06      — Nova Reforma (2006)
+    SPE       — Bíblia do Peregrino (Espanhol/PT)
+    TB10      — Tradução do Século 21
+    VFL       — Versão Fácil de Ler
+    SEF_BJC / SEF_SPS / SEF_TCP — Sefarditas judaicas
+
+  INGLÊS (25 versões)
+    AMP       — Amplified Bible
+    ASV       — American Standard Version
+    AUV       — American Updated Version
+    BSB       — Berean Study Bible
+    CEB       — Common English Bible
+    CEVD      — Contemporary English Version (Deuterocanônicos)
+    CJB       — Complete Jewish Bible
+    CSB17     — Christian Standard Bible (2017)
+    ERV       — Easy-to-Read Version
+    ESV       — English Standard Version
+    GNT       — Good News Translation
+    GNTD      — Good News Translation (Deuterocanônicos)
+    GNV       — Geneva Bible (1599)
+    ISV       — International Standard Version
+    KJV       — King James Version (1611)
+    LSB       — Legacy Standard Bible
+    LSV       — Literal Standard Version
+    MEV       — Modern English Version
+    MSG       — The Message (Eugene Peterson)
+    NABRE     — New American Bible Revised Edition
+    NASB      — New American Standard Bible
+    NET       — New English Translation
+    NIV       — New International Version
+    NIV2011   — NIV (edição 2011)
+    NJB1985   — New Jerusalem Bible (1985)
+    NKJV      — New King James Version
+    NLD       — New Living Dutch
+    NLT       — New Living Translation
+    NLV       — New Life Version
+    NRSVCE   — New RSV Catholic Edition
+    RSV       — Revised Standard Version
+    RSV2CE    — RSV 2nd Catholic Edition
+    TLV       — Tree of Life Version
+    TS2009    — The Scriptures 2009
+    WEB       — World English Bible
+    YLT       — Young's Literal Translation
+
+3.3 CAMADAS DO LEITOR INTERLINEAR
+----------------------------------
+  Cada versículo é exibido em até 4 camadas sobrepostas:
+
+  ┌─ Número do versículo ──────────────────────────────────────┐
+  │  [1]  Texto Original (hebraico/grego/aramaico/latim)       │
+  │  [2]  Transliteração fonética (opcional)                   │
+  │  [3]  Tradução em Português                                │
+  │  [4]  Tradução em Inglês                                   │
+  └────────────────────────────────────────────────────────────┘
+
+  Cada camada tem seu próprio seletor de tradução.
+  O seletor de Original muda conforme o testamento:
+    AT (livros 1–39)  → WLC, HAC, OL, LXX...
+    NT (livros 40–66) → SBLGNT, BYZ, TR, TISCH...
+    Deuterocanônicos  → LXX, Vulgata...
+
+3.4 FERRAMENTAS DO LEITOR
+--------------------------
+
+  TOOLBAR SUPERIOR (sempre visível):
+    A−  → Diminuir tamanho de fonte (mínimo 12px)
+    [X]px → Exibição do tamanho atual
+    A+  → Aumentar tamanho de fonte (máximo 26px)
+    🌙  → Modo Sépia (paleta âmbar/marrom, persiste no localStorage)
+    📑  → Painel Índice de Livros (AT + NT + Deuterocanônicos)
+    🔊  → Leitura em Voz Alta (TTS pt-BR, pulsa quando ativo)
+    📍  → Painel "Ir para versículo" (ex: João 3:16)
+    🔖  → Drawer de Marcadores (contador de marcadores salvos)
+    📖  → Modo Foco (oculta todo o UI exceto os versículos)
+
+  POR VERSÍCULO (aparecem ao passar o mouse / sempre no touch):
+    🔖  → Marcar/desmarcar versículo (salvo no localStorage)
+    🎨  → Picker de destaque: ouro · verde · azul · vermelho · remover
+    📋  → Copiar versículo para área de transferência
+    📤  → Compartilhar versículo como post na Comunidade
+
+  PAINEL "IR PARA" (jump panel):
+    Input de referência livre (ex: "João 3:16", "Gn 1:1")
+    Parse automático nome PT-BR + capítulo + versículo
+    Chips de histórico dos últimos capítulos lidos
+    Atalhos: Enter para navegar, Esc para fechar
+
+  BARRA DE PROGRESSO:
+    Faixa dourada fina abaixo dos versículos
+    Mostra "Cap. X de Y (X%)" — progresso no livro atual
+    Atualiza a cada navegação de capítulo
+
+  VERSÍCULO DO DIA:
+    Gerado deterministicamente por data (muda à meia-noite)
+    Botão "Abrir contexto" navega para o capítulo completo
+    Exibe na tradução PT selecionada
+
+  PESQUISA:
+    Busca por texto em todos os 66+ livros da tradução PT ativa
+    Resultados com referência (Livro Cap:Vers) clicáveis
+    Async com debounce para não travar o thread principal
+
+  MODO OFFLINE:
+    Download seletivo por grupo: Hebraico · Grego · Aramaico ·
+    Latim · Transliterações · Português · Inglês · Judaica · Outras
+    Presets: Essencial (~25 MB) / Todas (~359 MB)
+    Progresso por grupo com contador de versões em cache
+    Cache via Cache API do Service Worker
+
+  PERSISTÊNCIA (localStorage):
+    bj_bookmarks  → marcadores salvos (array JSON)
+    bj_highlights → destaques por versículo (objeto cor→[vids])
+    bj_history    → chips de histórico de leitura
+    bj_fontsize   → tamanho de fonte escolhido
+    bj_sepia      → estado do modo sépia (0/1)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  4. BACKEND — API REST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Tecnologia: Python 3.14 + Flask + SQLite + gunicorn
+
+  ROTAS DISPONÍVEIS:
+    GET  /                                   → serve www/index.html
+    POST /api/auth/send-token                → envia token 6 dígitos por e-mail
+    POST /api/auth/verify-token              → valida token e cria sessão
+    GET  /api/auth/me                        → dados do usuário logado
+    POST /api/auth/logout                    → encerra sessão
+    POST /api/auth/google                    → login via Google OAuth 2.0
+    GET  /api/auth/config                    → retorna GOOGLE_CLIENT_ID
+    POST /api/auth/community-guest           → acesso como visitante
+    GET  /api/profile                        → perfil do usuário
+    PUT  /api/profile                        → atualiza avatar/bio/nome
+    GET  /api/posts                          → lista posts (feed)
+    POST /api/posts                          → cria post
+    GET  /api/posts/<id>                     → post específico
+    DELETE /api/posts/<id>                   → apaga post (autor)
+    POST /api/posts/<id>/comments            → comenta
+    POST /api/posts/<id>/like                → curtir/descurtir
+    GET  /api/notifications                  → lista notificações
+    POST /api/notifications/read             → marca como lidas
+    GET  /api/community/users/search         → busca usuários
+    POST /api/community/friends/request      → enviar pedido de amizade
+
+  SEGURANÇA:
+    Senhas com bcrypt (fallback SHA-256 para contas legadas)
+    Rate limiting via Flask-Limiter (5 tentativas/min em /send-token)
+    Tokens de sessão com secrets.token_hex(32)
+    Validação de e-mail via regex antes de enviar token
+    Google OAuth validado server-side (google-auth library)
+
+  BANCO DE DADOS (SQLite):
+    Tabelas: users, sessions, posts, comments, likes,
+             notifications, friendships, messages
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  5. ARQUITETURA TÉCNICA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5.1 FRONTEND
+------------
+  Padrão: SPA (Single Page Application) sem framework
+  Módulos: IIFE (Immediately Invoked Function Expression) por aba
+  Comunicação entre módulos: via window.ModuleName.method()
+
+  Módulos JS:
+    app.js            (381 linhas) — Boot, salmos, configurações globais
+    bible.js         (1124 linhas) — Leitor interlinear completo
+    bible-features.js              — Favoritos, índice de livros, tema
+    bible-ui-injector.js           — Injeção dinâmica de painéis
+    community.js                   — Feed, auth, posts, notificações
+    compass.js                     — Bússola 3D + calibração + vibração
+    geolocation.js                 — GPS + bearing + distância
+    maps.js                        — Google Static Maps (lazy-load)
+    music.js                       — Web Audio API (melodias hebraicas)
+    pix.js                         — QR Code PIX + sistema de doação
+
+  CSS:
+    style.css        (3794 linhas) — Tema sacro hebraico completo
+    Variáveis: --gold-primary, --bg-card, --border-gold, --text-muted...
+    Fontes: Cinzel Decorative (títulos) + Frank Ruhl Libre (corpo)
+    Suporte a dark mode via [data-theme="light"]
+    Sépia mode via .sepia-mode na .bible-section
+
+5.2 SERVICE WORKER (sw.js)
+--------------------------
+  Cache: bussola-jerusalem-v13
+  Estratégia:
+    Assets estáticos (HTML/CSS/JS/img) → Cache First
+    Dados da Bíblia (JSON)            → Cache First com fallback
+    API backend                       → Network First
+  Detecta atualização e exibe banner "Nova versão disponível!"
+  Atualização automática a cada 30 minutos (reg.update())
+
+5.3 ANDROID (Capacitor 6)
+--------------------------
+  Arquivo de config: capacitor.config.json
+  Build: android/ (gerado pelo Capacitor)
+  APK assinado para publicação na Play Store
+  WebView nativo com ponte JS↔Nativo
+
+5.4 DESKTOP (Electron)
+-----------------------
+  main.js   — BrowserWindow 420×800, sempre no topo opcional
+  preload.js — Bridge seguro contextIsolated
+  Build: npm run electron:build → .exe (Windows) / .dmg (Mac) / AppImage (Linux)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  6. ESTRUTURA DE ARQUIVOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  bussula-jerusalem/
+  ├── www/
+  │   ├── index.html              SPA (713 linhas) — 7 abas
+  │   ├── sw.js                   Service Worker v12
+  │   ├── manifest.json           PWA manifest
+  │   ├── download.html           Página de download do APK
+  │   ├── css/
+  │   │   └── style.css           Tema completo (3794 linhas)
+  │   ├── js/
+  │   │   ├── app.js
+  │   │   ├── bible.js
+  │   │   ├── bible-features.js
+  │   │   ├── bible-ui-injector.js
+  │   │   ├── community.js
+  │   │   ├── community.old.js    (versão anterior, mantida)
+  │   │   ├── compass.js
+  │   │   ├── geolocation.js
+  │   │   ├── maps.js
+  │   │   ├── music.js
+  │   │   └── pix.js
+  │   ├── assets/img/             Ícones (72, 96, 128, 192, 512 px)
+  │   └── data/bibles/            84 pastas × 67 arquivos JSON = 5.628 arquivos
+  │       ├── books_pt.json       Nomes dos livros em PT-BR
+  │       ├── books_en.json       Nomes dos livros em EN
+  │       └── <SIGLA>/            Ex: ARA/, KJV/, WLC/...
+  │           └── <N>.json        Ex: 1.json (Gênesis), 40.json (Mateus)
+  │
+  ├── backend/
+  │   ├── app.py                  Servidor Flask principal
+  │   ├── auth.py                 Autenticação por e-mail (SMTP)
+  │   ├── database.py             Schema SQLite + get_db()
+  │   ├── psalms.py               Lista de salmos para tokens
+  │   ├── requirements.txt        Flask, flask-cors, google-auth, bcrypt...
+  │   └── Procfile                gunicorn app:app --bind 0.0.0.0:$PORT
+  │
+  ├── electron/
+  │   ├── main.js
+  │   └── preload.js
+  │
+  ├── android/                    Projeto Android gerado pelo Capacitor
+  ├── scripts/
+  │   ├── generate-icons.js       Gera ícones PNG de todos os tamanhos
+  │   └── generate-star-icon.py   Gera ícone da Estrela de Davi
+  ├── split-bibles.js             Script para dividir Bíblias em JSON por livro
+  ├── split-all-bibles.js         Versão batch do split-bibles
+  ├── capacitor.config.json
+  ├── package.json
+  ├── firebase.json               Config Firebase (alternativa de deploy)
+  ├── render.yaml                 Deploy backend (Render.com)
+  ├── vercel.json                 Deploy PWA (Vercel)
+  ├── netlify.toml                Deploy PWA (Netlify)
+  ├── BUILD_GUIDE.md              Guia passo-a-passo de build
+  ├── ROADMAP.md                  Roadmap completo do projeto
+  ├── projeto.txt                 Este arquivo
+  └── import-log.txt              Log da importação das 84 Bíblias
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  7. DEPLOY E PUBLICAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  FRONTEND (PWA):
+    Firebase → firebase deploy  ← ATIVO (produção atual)
+    Vercel  → vercel --prod  (vercel.json configurado)
+    Netlify → git push       (netlify.toml configurado)
+
+  BACKEND:
+    Render.com → conectar repo GitHub → render.yaml detectado
+    Variáveis necessárias no Render:
+      GOOGLE_CLIENT_ID     → ID OAuth do Google Console
+      GOOGLE_CLIENT_SECRET → Secret OAuth
+      SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASS → e-mail SMTP
+      SECRET_KEY           → chave secreta Flask
+
+  ANDROID (Play Store):
+    1. Android Studio → Build > Generate Signed APK
+    2. Criar conta Google Play Developer ($25 taxa única)
+    3. Upload do AAB na Play Console
+
+  DESKTOP:
+    npm install
+    npm run electron        → testa localmente
+    npm run electron:build  → gera instaladores
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  8. STACK TECNOLÓGICA COMPLETA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Frontend   : HTML5, CSS3, JavaScript ES6+ (vanilla, sem framework)
+  Padrão JS  : IIFE modules (sem bundler)
+  Mobile     : Capacitor 6 → Android APK (WebView nativo)
+  Desktop    : Electron 33+ + electron-builder
+  Backend    : Python 3.14 + Flask 3.x + SQLite
+  Servidor   : gunicorn (produção) / flask run (desenvolvimento)
+  Segurança  : bcrypt, Flask-Limiter, secrets.token_hex
+  Auth       : Google OAuth 2.0 (google-auth) + SMTP token 6 dígitos
+  Maps       : Google Static Maps API (carregamento lazy)
+  PWA        : Service Worker v12, Cache API, Web App Manifest
+  TTS        : Web Speech API nativa (SpeechSynthesisUtterance)
+  GPS        : Geolocation API nativa
+  Orientação : DeviceOrientation API nativa
+  Bíblia     : 84 × 67 arquivos JSON (~359 MB total)
+  QR Code    : QRCode.js (geração client-side)
+  Doação     : PIX (chave do autor no QR Code)
+  Fontes     : Google Fonts (Cinzel Decorative + Frank Ruhl Libre)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  9. HISTÓRICO DE VERSÕES (Service Worker cache key)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  v1 –v9  : Desenvolvimento inicial (bússola, mapa, comunidade, PWA)
+  v10     : Correção bug — números de Strong's Concordance apareciam
+            no texto do KJV e outras traduções anotadas.
+            Fix: função cleanBibleText() que remove tags <S>\d+</S>
+            e <sup>...</sup> antes de renderizar.
+  v11     : Bíblia Interlinear aprimorada:
+            - Marcadores (🔖) com drawer deslizante
+            - Destaques por cor (🎨) por versículo
+            - Copiar versículo (📋)
+            - Compartilhar na Comunidade (📤)
+            - Controle de fonte (A−/A+) com persistência
+            - Painel "Ir para" com parse de referências
+            - Histórico de leitura (chips)
+            - Modo Foco (📖)
+            - Toast de feedback
+            - Drawer de marcadores com overlay
+  v12     : Melhorias adicionais:
+            - Leitura em Voz Alta (🔊) TTS pt-BR
+            - Modo Sépia (🌙) com paleta âmbar
+            - Índice de Livros (📑) no toolbar
+            - Barra de progresso dourada por livro
+            - Unificação das toolbars (removida duplicata)
+            - Exportação de buildBookSelector/buildChapterSelector
+              para compatibilidade retroativa com SW em cache
+  v13     : Modo Foco fullscreen imersivo (overlay):
+            - Overlay fullscreen com animação fade-in
+            - Select de livro + capítulo integrados
+            - 4 seletores de tradução (Original/Translit/PT/EN)
+            - Checkboxes de camada dentro do overlay
+            - Navegação prev/next no rodapé
+            - Sépia espelhada dentro do overlay
+            - TTS dentro do overlay
+            - Atalhos: Esc (fechar), ← → (capítulos)
+            - Sincronização bidirecional com a aba principal
+
+================================================================
+  FIM DO DOCUMENTO
+================================================================

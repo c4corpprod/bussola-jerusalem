@@ -7,6 +7,10 @@ android/capacitor-cordova-android-plugins/build/
 # Node
 node_modules/
 
+# Segredos — nunca commitar
+backend/.env
+*.env
+
 # OS
 .DS_Store
 Thumbs.db
@@ -21,3 +25,16 @@ Thumbs.db
 
 # Local
 android/local.properties
+
+# Dados das Bíblias (359MB — hospedados no Firebase, não no git)
+www/data/bibles/
+
+# Cache Firebase
+.firebase/
+
+# MP3
+*.mp3
+
+# Logs
+import-log.txt
+firebase-debug.log
