@@ -460,53 +460,9 @@ const Bible = (() => {
             items: [
                 { id: 'KJV', name: 'KJV — King James Version' },
                 { id: 'NKJV', name: 'NKJV — New King James' },
-                { id: 'NIV', name: 'NIV — New International' },
                 { id: 'NIV2011', name: 'NIV2011 — NIV 2011' },
                 { id: 'ESV', name: 'ESV — English Standard' },
-                { id: 'NASB', name: 'NASB — New American Standard' },
                 { id: 'NLT', name: 'NLT — New Living Translation' },
-                { id: 'AMP', name: 'AMP — Amplified Bible' },
-                { id: 'MSG', name: 'MSG — The Message' },
-                { id: 'CSB17', name: 'CSB17 — Christian Standard' },
-                { id: 'LSB', name: 'LSB — Legacy Standard' },
-                { id: 'BSB', name: 'BSB — Berean Standard' },
-                { id: 'ASV', name: 'ASV — American Standard' },
-                { id: 'WEB', name: 'WEB — World English Bible' },
-                { id: 'YLT', name: "YLT — Young's Literal" },
-                { id: 'ERV', name: 'ERV — Easy-to-Read' },
-                { id: 'GNV', name: 'GNV — Geneva Bible' },
-                { id: 'ISV', name: 'ISV — International Standard' },
-                { id: 'LSV', name: 'LSV — Literal Standard' },
-                { id: 'MEV', name: 'MEV — Modern English' },
-                { id: 'NET', name: 'NET — NET Bible' },
-                { id: 'NLV', name: 'NLV — New Life Version' },
-                { id: 'RSV', name: 'RSV — Revised Standard' },
-                { id: 'CEB', name: 'CEB — Common English Bible' },
-                { id: 'GNT', name: 'GNT — Good News Translation' },
-            ]
-        },
-        outras: {
-            label: '🌍 Outras Línguas',
-            items: [
-                { id: 'NR06', name: 'NR06 — Nuova Riveduta (IT)' },
-                { id: 'NLD', name: 'NLD — Holandês' },
-                { id: 'CEVD', name: 'CEVD — Contemporary English' },
-                { id: 'GNTD', name: 'GNTD — Good News Deuterocanon' },
-                { id: 'NABRE', name: 'NABRE — New American Católica' },
-                { id: 'NJB1985', name: 'NJB — New Jerusalem Bible' },
-                { id: 'NRSVCE', name: 'NRSVCE — NRSV Catholic Ed.' },
-                { id: 'RSV2CE', name: 'RSV2CE — RSV 2nd Catholic Ed.' },
-            ]
-        },
-        judaicas: {
-            label: '✡ Messiânica / Judaica',
-            items: [
-                { id: 'CJB', name: 'CJB — Complete Jewish Bible' },
-                { id: 'TLV', name: 'TLV — Tree of Life Version' },
-                { id: 'TS2009', name: 'TS2009 — The Scriptures 2009' },
-                { id: 'SEF_BJC', name: 'SEF_BJC — Sefaria (parcial)' },
-                { id: 'SEF_SPS', name: 'SEF_SPS — Sefaria Sidur (parcial)' },
-                { id: 'SEF_TCP', name: 'SEF_TCP — Sefaria TCP (parcial)' },
             ]
         }
     };
@@ -640,15 +596,15 @@ const Bible = (() => {
             buildSelect('bible-select-translit', ['transliteracoes'],
                 selectedTranslitDeut);
             buildSelect('bible-select-pt', ['portugues'], selectedPT);
-            buildSelect('bible-select-en', ['ingles','outras'], selectedEN);
+            buildSelect('bible-select-en', ['ingles'], selectedEN);
         } else {
             buildSelect('bible-select-original',
-                ['hebraico','grego_at','grego_nt','aramaico','latim','judaicas'],
+                ['hebraico','grego_at','grego_nt','aramaico','latim'],
                 isOT(currentBook) ? selectedOriginal : selectedOriginalNT);
             buildSelect('bible-select-translit', ['transliteracoes'],
                 isOT(currentBook) ? selectedTranslit : selectedTranslitNT);
-            buildSelect('bible-select-pt', ['portugues','judaicas'], selectedPT);
-            buildSelect('bible-select-en', ['ingles','outras'], selectedEN);
+            buildSelect('bible-select-pt', ['portugues'], selectedPT);
+            buildSelect('bible-select-en', ['ingles'], selectedEN);
         }
     }
 
@@ -1022,8 +978,6 @@ const BibleOffline = (() => {
         translit: '2026.04.24-tr',
         portugues: '2026.04.24-pt',
         ingles: '2026.04.24-en',
-        judaica: '2026.04.24-jd',
-        outras: '2026.04.24-ot',
     };
 
     const CAT_LABEL = {
@@ -1034,8 +988,6 @@ const BibleOffline = (() => {
         translit: 'Transliteração',
         portugues: 'Português',
         ingles: 'Inglês',
-        judaica: 'Judaica',
-        outras: 'Outras',
     };
 
     const ALL_TRANSLATIONS = [
@@ -1086,43 +1038,9 @@ const BibleOffline = (() => {
         { id:'SPE', name:'SPE — Samaritano (Pent.)', files:5, size:'1.0 MB', cat:'portugues' },
         { id:'KJV', name:'KJV — King James', files:81, size:'9.9 MB', cat:'ingles' },
         { id:'NKJV', name:'NKJV — New King James', files:66, size:'5.1 MB', cat:'ingles' },
-        { id:'NIV', name:'NIV — New International', files:66, size:'4.8 MB', cat:'ingles' },
         { id:'NIV2011', name:'NIV2011 — NIV 2011', files:66, size:'4.7 MB', cat:'ingles' },
         { id:'ESV', name:'ESV — English Standard', files:66, size:'4.8 MB', cat:'ingles' },
-        { id:'NASB', name:'NASB — New American Std.', files:66, size:'4.9 MB', cat:'ingles' },
         { id:'NLT', name:'NLT — New Living', files:66, size:'5.0 MB', cat:'ingles' },
-        { id:'AMP', name:'AMP — Amplified', files:66, size:'5.8 MB', cat:'ingles' },
-        { id:'MSG', name:'MSG — The Message', files:66, size:'4.9 MB', cat:'ingles' },
-        { id:'CSB17', name:'CSB17 — Christian Std.', files:66, size:'5.4 MB', cat:'ingles' },
-        { id:'LSB', name:'LSB — Legacy Standard', files:66, size:'5.2 MB', cat:'ingles' },
-        { id:'BSB', name:'BSB — Berean Standard', files:66, size:'4.7 MB', cat:'ingles' },
-        { id:'ASV', name:'ASV — American Standard', files:66, size:'8.6 MB', cat:'ingles' },
-        { id:'WEB', name:'WEB — World English', files:83, size:'5.9 MB', cat:'ingles' },
-        { id:'YLT', name:"YLT — Young's Literal", files:66, size:'5.0 MB', cat:'ingles' },
-        { id:'ERV', name:'ERV — Easy-to-Read', files:66, size:'5.3 MB', cat:'ingles' },
-        { id:'GNV', name:'GNV — Geneva Bible', files:66, size:'5.0 MB', cat:'ingles' },
-        { id:'ISV', name:'ISV — Intl. Standard', files:66, size:'5.8 MB', cat:'ingles' },
-        { id:'LSV', name:'LSV — Literal Standard', files:66, size:'5.0 MB', cat:'ingles' },
-        { id:'MEV', name:'MEV — Modern English', files:66, size:'4.9 MB', cat:'ingles' },
-        { id:'NET', name:'NET — NET Bible', files:66, size:'4.9 MB', cat:'ingles' },
-        { id:'NLV', name:'NLV — New Life Version', files:66, size:'4.9 MB', cat:'ingles' },
-        { id:'RSV', name:'RSV — Revised Standard', files:66, size:'4.8 MB', cat:'ingles' },
-        { id:'CEB', name:'CEB — Common English', files:83, size:'6.0 MB', cat:'ingles' },
-        { id:'GNT', name:'GNT — Good News', files:66, size:'4.6 MB', cat:'ingles' },
-        { id:'CJB', name:'CJB — Complete Jewish', files:66, size:'5.0 MB', cat:'judaica' },
-        { id:'TLV', name:'TLV — Tree of Life', files:66, size:'4.9 MB', cat:'judaica' },
-        { id:'TS2009', name:'TS2009 — The Scriptures', files:66, size:'5.0 MB', cat:'judaica' },
-        { id:'SEF_BJC', name:'SEF_BJC — Sefaria (parcial)', files:1, size:'5 KB', cat:'judaica' },
-        { id:'SEF_SPS', name:'SEF_SPS — Sefaria Sidur (parcial)', files:10, size:'1.3 MB', cat:'judaica' },
-        { id:'SEF_TCP', name:'SEF_TCP — Sefaria TCP (parcial)', files:1, size:'5 KB', cat:'judaica' },
-        { id:'NR06', name:'NR06 — Nuova Riveduta', files:66, size:'4.9 MB', cat:'outras' },
-        { id:'NLD', name:'NLD — Holandês', files:73, size:'5.5 MB', cat:'outras' },
-        { id:'CEVD', name:'CEVD — Contemp. English', files:78, size:'5.3 MB', cat:'outras' },
-        { id:'GNTD', name:'GNTD — Good News Deut.', files:81, size:'5.7 MB', cat:'outras' },
-        { id:'NABRE', name:'NABRE — New American Cat.', files:73, size:'5.8 MB', cat:'outras' },
-        { id:'NJB1985', name:'NJB — New Jerusalem', files:73, size:'5.4 MB', cat:'outras' },
-        { id:'NRSVCE', name:'NRSVCE — NRSV Catholic', files:73, size:'5.6 MB', cat:'outras' },
-        { id:'RSV2CE', name:'RSV2CE — RSV 2nd Cat.', files:73, size:'5.6 MB', cat:'outras' },
     ];
 
     const ESSENCIAL = ['WLC','SBLGNT','WLC_TRANSLIT','SBLGNT_TRANSLIT','ARA','KJV'];
@@ -1213,8 +1131,6 @@ const BibleOffline = (() => {
             { key:'translit', label:'🔤 Transliterações' },
             { key:'portugues', label:'🇧🇷 Português' },
             { key:'ingles', label:'🇺🇸 Inglês' },
-            { key:'judaica', label:'✡ Messiânica/Judaica' },
-            { key:'outras', label:'🌍 Outras' },
         ];
 
         let html = '';
