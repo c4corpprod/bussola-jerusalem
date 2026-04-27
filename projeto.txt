@@ -3,8 +3,85 @@
   © Marcos Fernando · C4 Corporation
   Contato : c4corpbeats@gmail.com
   WhatsApp: https://chat.whatsapp.com/C9KfyK7InB00wJ2jRFDtOr
-  Versão  : Service Worker v13 · Atualizado: 24/04/2026
+  Versão  : Service Worker v15 · Atualizado: 27/04/2026
 ================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ATUALIZAÇÕES RECENTES (Abril 2026)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✅ Migração das Bíblias para CDN (jsDelivr)
+     • Bíblias servidas via GitHub + jsDelivr CDN
+     • Repositório público: c4corpprod/bussola-jerusalem
+     • Firebase agora hospeda apenas HTML/CSS/JS (~5 MB)
+     • Cache offline mantido via Service Worker
+     • URL CDN: cdn.jsdelivr.net/gh/c4corpprod/bussola-jerusalem@main/www/data/bibles/
+
+  ✅ Curadoria do catálogo de Bíblias (84 → 50 traduções)
+     • Mantidas 18 versões em Português (todas as principais)
+     • Inglês reduzido para 5 essenciais: KJV, NKJV, NIV2011, ESV, NLT
+     • Removidas: outras línguas (NL, IT), católicas EN, messiânicas
+     • Línguas originais mantidas integralmente (Hebraico/Grego/Aramaico/Latim)
+
+  ✅ Modo Foco (Reading Mode) aprimorado
+     • Controle de fonte A− / 16px / A+ no topbar
+     • Modo sépia 🌙 toggle (em desenvolvimento)
+     • Swipe lateral para próximo/anterior capítulo
+     • Largura confortável de leitura (~760px centrado)
+     • Botão "✕ Sair" mais visível
+
+  ✅ TTS Multilíngue (Leitura em Voz Alta)
+     • Português → voz pt-BR
+     • Inglês → voz en-US
+     • Grego (SBLGNT, BYZ, LXX...) → voz el-GR (pronúncia moderna)
+     • Hebraico (WLC, HAC) → voz he-IL (pronúncia moderna)
+     • Latim (Vulgata) → fallback it-IT
+     • Transliterações → en-US
+     • Detecção automática da camada ativa para leitura
+
+  ✅ Versículo do Dia (Notificações Locais)
+     • 31 versículos curados com rotação diária (dia do ano % 31)
+     • Notificação local via Service Worker (sem servidor push)
+     • Configurável em ⚙️ Opções → 🔔 Notificações
+     • Horário escolhível (06h, 07h, 08h, 09h, 12h, 18h, 20h, 22h)
+     • Botão "Testar" para preview imediato
+     • Implementação: www/js/daily-verse.js
+
+  ✅ Acessibilidade
+     • aria-label em todos os botões da navegação inferior
+     • aria-hidden nos emojis decorativos
+     • Contraste --text-muted aumentado (#8b7a5e → #b09a72)
+     • Atende WCAG AA (4.5:1)
+
+  ✅ Aba Mapa oculta na navegação
+     • style="display:none" — código preservado para reativar futuramente
+
+  🚧 Pendências
+     • Backend de chat privado e amigos (UI pronta, rotas faltam)
+     • APK release (atualmente só debug build local)
+     • Push notifications de comunidade (depende de FCM/Web Push backend)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ARQUITETURA DE HOSPEDAGEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌─────────────────────────────────────────────────────┐
+  │  USUÁRIO (PWA)                                      │
+  └────────┬───────────────┬───────────────────┬────────┘
+           │               │                   │
+           ▼               ▼                   ▼
+   ┌───────────────┐ ┌─────────────┐  ┌──────────────┐
+   │ Firebase      │ │ jsDelivr    │  │ Render.com   │
+   │ Hosting       │ │ (CDN GitHub)│  │ (Backend)    │
+   │               │ │             │  │              │
+   │ HTML/CSS/JS   │ │ 50 Bíblias  │  │ Flask + DB   │
+   │ ~5 MB         │ │ ~250 MB     │  │ Comunidade   │
+   │ Plano: Spark  │ │ Grátis      │  │ Plano: Free  │
+   └───────────────┘ └─────────────┘  └──────────────┘
+
+  URL produção: https://bussola-jerusalem-34859.web.app
+  Conta Firebase: c4corpbeats@gmail.com
+  Conta GitHub:   c4corpprod (https://github.com/c4corpprod/bussola-jerusalem)
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

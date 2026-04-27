@@ -64,33 +64,33 @@
     <div id="app" class="app hidden">
         
         <!-- BARRA DE NAVEGAÇÃO INFERIOR -->
-        <nav id="bottom-nav" class="bottom-nav">
-            <button class="nav-btn active" data-tab="tab-home" onclick="switchTab('tab-home')">
-                <span class="nav-icon">🧭</span>
+        <nav id="bottom-nav" class="bottom-nav" aria-label="Navegação principal">
+            <button class="nav-btn active" data-tab="tab-home" onclick="switchTab('tab-home')" aria-label="Bússola">
+                <span class="nav-icon" aria-hidden="true">🧭</span>
                 <span class="nav-label">Bússola</span>
             </button>
-            <button class="nav-btn" data-tab="tab-map" onclick="switchTab('tab-map')">
-                <span class="nav-icon">🗺️</span>
+            <button class="nav-btn" data-tab="tab-map" onclick="switchTab('tab-map')" style="display:none" aria-label="Mapa">
+                <span class="nav-icon" aria-hidden="true">🗺️</span>
                 <span class="nav-label">Mapa</span>
             </button>
-            <button class="nav-btn" data-tab="tab-community" onclick="switchTab('tab-community')">
-                <span class="nav-icon" style="position:relative">👥<span id="community-notif-badge" style="display:none;position:absolute;top:-7px;right:-9px;background:#e74c3c;color:#fff;font-size:0.55rem;font-weight:700;padding:1px 4px;border-radius:10px;min-width:14px;text-align:center;line-height:1.4"></span></span>
+            <button class="nav-btn" data-tab="tab-community" onclick="switchTab('tab-community')" aria-label="Comunidade">
+                <span class="nav-icon" aria-hidden="true" style="position:relative">👥<span id="community-notif-badge" style="display:none;position:absolute;top:-7px;right:-9px;background:#e74c3c;color:#fff;font-size:0.55rem;font-weight:700;padding:1px 4px;border-radius:10px;min-width:14px;text-align:center;line-height:1.4"></span></span>
                 <span class="nav-label">Comunidade</span>
             </button>
-            <button class="nav-btn" data-tab="tab-bible" onclick="switchTab('tab-bible'); initBibleIfNeeded();">
-                <span class="nav-icon">📖</span>
+            <button class="nav-btn" data-tab="tab-bible" onclick="switchTab('tab-bible'); initBibleIfNeeded();" aria-label="Bíblia">
+                <span class="nav-icon" aria-hidden="true">📖</span>
                 <span class="nav-label">Bíblia</span>
             </button>
-            <button class="nav-btn" data-tab="tab-studies" onclick="switchTab('tab-studies')">
-                <span class="nav-icon">🧾</span>
+            <button class="nav-btn" data-tab="tab-studies" onclick="switchTab('tab-studies')" aria-label="Estudos">
+                <span class="nav-icon" aria-hidden="true">🧾</span>
                 <span class="nav-label">Estudos</span>
             </button>
-            <button class="nav-btn" data-tab="tab-pix" onclick="switchTab('tab-pix')">
-                <span class="nav-icon">💛</span>
+            <button class="nav-btn" data-tab="tab-pix" onclick="switchTab('tab-pix')" aria-label="Apoiar">
+                <span class="nav-icon" aria-hidden="true">💛</span>
                 <span class="nav-label">Apoiar</span>
             </button>
-            <button class="nav-btn" data-tab="tab-settings" onclick="switchTab('tab-settings')">
-                <span class="nav-icon">⚙️</span>
+            <button class="nav-btn" data-tab="tab-settings" onclick="switchTab('tab-settings')" aria-label="Opções">
+                <span class="nav-icon" aria-hidden="true">⚙️</span>
                 <span class="nav-label">Opções</span>
             </button>
         </nav>
@@ -662,6 +662,44 @@
                         </div>
                     </div>
 
+                    <!-- Notificações -->
+                    <div class="settings-group">
+                        <h3 class="settings-group-title">🔔 Notificações</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-name">Versículo do dia</span>
+                                <span class="setting-desc">Receba uma palavra diária de inspiração</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-daily-verse" onchange="DailyVerse.toggle(this.checked)" aria-label="Ativar versículo do dia">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-name">Horário</span>
+                                <span class="setting-desc">Quando o versículo aparecerá</span>
+                            </div>
+                            <select id="setting-daily-verse-hour" class="sacred-input" style="width:auto;min-width:90px;padding:6px 10px;font-size:0.85rem" onchange="DailyVerse.setPreferredHour(parseInt(this.value,10))" aria-label="Horário do versículo do dia">
+                                <option value="6">06:00</option>
+                                <option value="7" selected>07:00</option>
+                                <option value="8">08:00</option>
+                                <option value="9">09:00</option>
+                                <option value="12">12:00</option>
+                                <option value="18">18:00</option>
+                                <option value="20">20:00</option>
+                                <option value="22">22:00</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <span class="setting-name">Testar agora</span>
+                                <span class="setting-desc">Mostra uma notificação de exemplo</span>
+                            </div>
+                            <button class="sacred-btn" style="padding:8px 14px;font-size:0.85rem;width:auto" onclick="DailyVerse.showVerseNow()" aria-label="Testar notificação do versículo do dia">🔔 Testar</button>
+                        </div>
+                    </div>
+
                     <!-- Aparência -->
                     <div class="settings-group">
                         <h3 class="settings-group-title">🎨 Aparência</h3>
@@ -775,6 +813,7 @@
     <script src="js/bible.js"></script>
     <script src="js/studies.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/daily-verse.js"></script>
 
     <!-- Service Worker (PWA) — registra e detecta atualizações -->
         <!-- FEATURE 1-4: Histórico, Favoritos, Índice, Dark Mode -->

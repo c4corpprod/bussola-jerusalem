@@ -275,6 +275,17 @@ const App = (() => {
         init();
     }
 
+    // Listener: clique em notificação do SW pode pedir para trocar de aba
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'OPEN_TAB' && e.data.tab) {
+                if (typeof switchTab === 'function') {
+                    switchTab(e.data.tab);
+                }
+            }
+        });
+    }
+
     // API Pública
     return {
         startAllSystems,

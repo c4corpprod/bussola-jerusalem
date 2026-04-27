@@ -30,8 +30,9 @@ android/local.properties
 # Cache Firebase
 .firebase/
 
-# MP3
+# MP3 — arquivos grandes, não versionar
 *.mp3
+*.MP3
 
 # Logs
 import-log.txt

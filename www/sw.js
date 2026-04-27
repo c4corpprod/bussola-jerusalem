@@ -5,8 +5,8 @@
    Cache-first para assets estáticos, Network-first para API
    ═══════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'bussola-jerusalem-v14';
-const STATIC_CACHE = 'bussola-static-v5';
+const CACHE_NAME = 'bussola-jerusalem-v15';
+const STATIC_CACHE = 'bussola-static-v6';
 const API_CACHE = 'bussola-api-v4';
 const BIBLE_CACHE = 'bussola-bible-v2';
 const USER_DATA_CACHE = 'bussola-userdata-v1';
@@ -487,25 +487,43 @@ self.addEventListener('sync', event => {
     }
 });
 
-// ─── PUSH NOTIFICATIONS (futuro) ───
+// ─── PUSH NOTIFICATIONS ───
 self.addEventListener('push', event => {
     if (!event.data) return;
 
-    const data = event.data.json();
+    let data = {};
+    try { data = event.data.json(); } catch { data = { body: event.data.text() }; }
+
     event.waitUntil(
         self.registration.showNotification(data.title || '🕎 Bússola para Jerusalém', {
-            body: data.body || 'Nova notificação da comunidade',
-            icon: '/assets/img/icon-192.png',
-            badge: '/assets/img/icon-72.png',
+            body: data.body || 'Nova notificação',
+            icon: 'assets/img/icon-192.png',
+            badge: 'assets/img/icon-72.png',
             tag: data.tag || 'default',
-            data: data.url || '/'
+            data: data
         })
     );
 });
 
 self.addEventListener('notificationclick', event => {
     event.notification.close();
+    const data = event.notification.data || {};
+    let target = '/';
+    if (typeof data === 'string') target = data;
+    else if (data.url) target = data.url;
+    if (data.tab) target += `#${data.tab}`;
+
     event.waitUntil(
-        clients.openWindow(event.notification.data || '/')
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+            for (const c of list) {
+                if ('focus' in c) {
+                    if (data.tab && 'postMessage' in c) {
+                        c.postMessage({ type: 'OPEN_TAB', tab: data.tab });
+                    }
+                    return c.focus();
+                }
+            }
+            return clients.openWindow(target);
+        })
     );
 });
