@@ -133,9 +133,13 @@ const Bible = (() => {
     function applyFontSize() {
         const el = document.getElementById('bible-verses');
         if (el) el.style.fontSize = bibleFontSize + 'px';
+        const fel = document.getElementById('bible-focus-verses');
+        if (fel) fel.style.fontSize = bibleFontSize + 'px';
         localStorage.setItem(FS_KEY, bibleFontSize);
         const lbl = document.getElementById('bible-font-label');
         if (lbl) lbl.textContent = bibleFontSize + 'px';
+        const flbl = document.getElementById('bible-focus-font-label');
+        if (flbl) flbl.textContent = bibleFontSize + 'px';
     }
     function changeFontSize(delta) {
         bibleFontSize = Math.min(26, Math.max(12, bibleFontSize + delta));
@@ -223,6 +227,18 @@ const Bible = (() => {
         const sb = document.getElementById('bible-focus-sepia-btn');
         if (sb) sb.classList.toggle('active', _sepiaMode);
         _syncFocusVerses();
+        applyFontSize();
+        // Swipe para trocar capítulo no mobile (registra só uma vez)
+        const _fv = document.getElementById('bible-focus-verses');
+        if (_fv && !_fv.dataset.swipe) {
+            _fv.dataset.swipe = '1';
+            let _sx = 0;
+            _fv.addEventListener('touchstart', e => { _sx = e.touches[0].clientX; }, { passive: true });
+            _fv.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - _sx;
+                if (Math.abs(dx) > 70) { if (dx < 0) nextChapter(); else prevChapter(); }
+            }, { passive: true });
+        }
         showBibleToast('📖 Modo foco ativado — Esc para sair');
     }
 

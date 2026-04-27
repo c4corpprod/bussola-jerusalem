@@ -490,9 +490,12 @@
                         <select id="focus-chapter-select" class="focus-select" onchange="Bible.focusChangeChapter(this.value)"></select>
                     </div>
                     <div class="bible-focus-topbar-right">
+                        <button class="bible-focus-ctrl-btn" onclick="Bible.changeFontSize(-1)" title="Diminuir fonte">A<small>−</small></button>
+                        <span id="bible-focus-font-label" class="bible-focus-font-label">16px</span>
+                        <button class="bible-focus-ctrl-btn" onclick="Bible.changeFontSize(1)" title="Aumentar fonte">A<big>+</big></button>
                         <button class="bible-focus-ctrl-btn" onclick="Bible.toggleSepia()" id="bible-focus-sepia-btn" title="Modo sépia">🌙</button>
                         <button class="bible-focus-ctrl-btn" onclick="Bible.toggleTTS()" id="bible-focus-tts-btn" title="Ler em voz alta">🔊</button>
-                        <button class="bible-focus-close-btn" onclick="Bible.closeFocusMode()" title="Fechar modo foco">✕</button>
+                        <button class="bible-focus-close-btn" onclick="Bible.closeFocusMode()" title="Fechar modo foco">✕ Sair</button>
                     </div>
                 </div>
                 <!-- Linha de seletores de tradução -->

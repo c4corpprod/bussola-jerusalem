@@ -4454,7 +4454,8 @@ body {
 .bible-focus-verses {
     flex: 1;
     overflow-y: auto;
-    padding: 14px 20px 24px;
+    /* Centraliza o texto em tela larga — máximo ~760px de conteúdo */
+    padding: 20px clamp(20px, calc(50% - 380px), 50%) 48px;
     scroll-behavior: smooth;
 }
 .bible-focus-verses::-webkit-scrollbar { width: 5px; }
@@ -4463,8 +4464,26 @@ body {
     background: rgba(212,168,67,.35);
     border-radius: 3px;
 }
+/* Textos de leitura com mais respiro */
+.bible-focus-verses .pt-text,
+.bible-focus-verses .en-text {
+    line-height: 1.85;
+    font-size: 1.05em;
+}
+.bible-focus-verses .original-text,
+.bible-focus-verses .translit-text {
+    line-height: 1.7;
+}
 /* No modo foco, ocultar botão "Compartilhar" (menos ruído) */
 .bible-focus-verses .verse-share-btn2 { display: none !important; }
+/* Label de fonte no overlay */
+.bible-focus-font-label {
+    color: var(--gold-primary, #d4a843);
+    font-size: 11px;
+    min-width: 28px;
+    text-align: center;
+    line-height: 1;
+}
 
 /* ── Rodapé de Navegação ────────────────────────────────── */
 .bible-focus-footer {
