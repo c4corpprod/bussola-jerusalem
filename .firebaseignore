@@ -1,0 +1,19 @@
+# Dados das Bíblias — servidos via jsDelivr CDN (GitHub)
+# Não fazer deploy no Firebase Hosting (359 MB, 4678 arquivos)
+www/data/bibles/**
+
+# Node
+node_modules/
+
+# Segredos
+backend/.env
+*.env
+
+# Android
+android/
+
+# Outros
+.firebase/
+*.mp3
+import-log.txt
+firebase-debug.log

@@ -537,11 +537,14 @@ const Bible = (() => {
     function isDeut(b) { return b >= 67; }
     const MAX_BOOK = 88;
 
+    // CDN base — dados hospedados no GitHub via jsDelivr
+    const CDN_BASE = 'https://cdn.jsdelivr.net/gh/Kaibadara/bussola-jerusalem@main/www/data/bibles';
+
     async function loadBook(tr, bookNum) {
         const k = `${tr}/${bookNum}`;
         if (cache[k]) return cache[k];
         try {
-            const r = await fetch(`data/bibles/${tr}/${bookNum}.json`);
+            const r = await fetch(`${CDN_BASE}/${tr}/${bookNum}.json`);
             if (!r.ok) return null;
             cache[k] = await r.json();
             return cache[k];

@@ -26,8 +26,6 @@ Thumbs.db
 # Local
 android/local.properties
 
-# Dados das Bíblias (359MB — hospedados no Firebase, não no git)
-www/data/bibles/
 
 # Cache Firebase
 .firebase/
