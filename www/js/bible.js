@@ -330,48 +330,89 @@ const Bible = (() => {
     // ── TTS (Leitura em Voz Alta) ──────────────────────────────────
     let _ttsActive = false;
     let _ttsUtterance = null;
+
+    // Mapa tradução → código de língua para speechSynthesis
+    const _TTS_LANG = {
+        // Português
+        ARA:'pt-BR', ARC09:'pt-BR', ACF11:'pt-BR', NAA:'pt-BR', NVT:'pt-BR',
+        NTLH:'pt-BR', NVIPT:'pt-BR', CNBB:'pt-BR', NBV07:'pt-BR', TB10:'pt-BR',
+        KJA:'pt-BR', ALM21:'pt-BR', OL:'pt-BR', VFL:'pt-BR', LBP:'pt-BR',
+        MENS:'pt-BR', AUV:'pt-BR', SPE:'pt-BR',
+        // Inglês
+        KJV:'en-US', NKJV:'en-US', NIV2011:'en-US', ESV:'en-US', NLT:'en-US',
+        // Hebraico (he-IL — pronúncia moderna)
+        WLC:'he-IL', WLCa:'he-IL', WLCC:'he-IL', HAC:'he-IL', DHNT:'he-IL',
+        // Grego (el-GR — pronúncia moderna)
+        SBLGNT:'el-GR', BYZ:'el-GR', TR:'el-GR', TISCH:'el-GR', NTGT:'el-GR',
+        LXX:'el-GR', LXXE:'el-GR',
+        // Transliterações → inglês (alfabeto latino)
+        WLC_TRANSLIT:'en-US', WLCC_TRANSLIT:'en-US', HAC_TRANSLIT:'en-US',
+        SBLGNT_TRANSLIT:'en-US', BYZ_TRANSLIT:'en-US', TR_TRANSLIT:'en-US',
+        DHNT_TRANSLIT:'en-US', LXX_TRANSLIT:'en-US',
+        PESHITTA_TRANSLIT:'en-US', TARGUM_TRANSLIT:'en-US', VULG_TRANSLIT:'en-US',
+        // Latim → italiano como fallback audível
+        VULG:'it-IT', DRB:'en-US',
+    };
+
+    // Prioridade de leitura: pt → en → original → translit
+    function _pickTTSLayer() {
+        if (layers.pt) return { selector: '.pt-text', lang: _TTS_LANG[selectedPT] || 'pt-BR', label: selectedPT };
+        if (layers.en) return { selector: '.en-text', lang: _TTS_LANG[selectedEN] || 'en-US', label: selectedEN };
+        const oK = isDeut(currentBook) ? selectedOriginalDeut : isOT(currentBook) ? selectedOriginal : selectedOriginalNT;
+        if (layers.original) return { selector: '.original-text', lang: _TTS_LANG[oK] || 'en-US', label: oK };
+        if (layers.translit) return { selector: '.translit-text', lang: 'en-US', label: 'Translit.' };
+        return null;
+    }
+
     function toggleTTS() {
         if (_ttsActive) { _stopTTS(); return; }
         _startTTS();
     }
+
     function _startTTS() {
         if (!window.speechSynthesis) { showBibleToast('⚠️ Voz não disponível neste navegador'); return; }
+        const pick = _pickTTSLayer();
+        if (!pick) { showBibleToast('⚠️ Ative pelo menos uma camada de texto'); return; }
         window.speechSynthesis.cancel();
-        // Coletar texto do capítulo atual (somente textos em pt)
         const verses = document.querySelectorAll('.bible-verse-block');
         if (!verses.length) { showBibleToast('⚠️ Nenhum texto carregado'); return; }
         let text = '';
         verses.forEach(v => {
-            const ptEl = v.querySelector('.pt-text');
-            if (ptEl) text += ptEl.textContent.trim() + ' ';
+            const el = v.querySelector(pick.selector);
+            if (el) text += el.textContent.trim() + ' ';
         });
-        if (!text.trim()) { showBibleToast('⚠️ Ative a camada Português para ouvir'); return; }
+        if (!text.trim()) { showBibleToast('⚠️ Texto não disponível para esta camada'); return; }
         _ttsUtterance = new SpeechSynthesisUtterance(text);
-        _ttsUtterance.lang = 'pt-BR';
+        _ttsUtterance.lang = pick.lang;
         _ttsUtterance.rate = 0.9;
         _ttsUtterance.pitch = 1;
-        // Preferir voz pt-BR se disponível
+        // Preferir voz nativa do idioma se disponível
         const voices = window.speechSynthesis.getVoices();
-        const ptVoice = voices.find(v => v.lang === 'pt-BR') || voices.find(v => v.lang.startsWith('pt'));
-        if (ptVoice) _ttsUtterance.voice = ptVoice;
+        const best = voices.find(v => v.lang === pick.lang)
+                  || voices.find(v => v.lang.startsWith(pick.lang.split('-')[0]));
+        if (best) _ttsUtterance.voice = best;
         _ttsUtterance.onend = () => _stopTTS();
         _ttsUtterance.onerror = () => _stopTTS();
         _ttsActive = true;
         _updateTTSBtn();
         window.speechSynthesis.speak(_ttsUtterance);
-        showBibleToast('🔊 Leitura iniciada');
+        showBibleToast(`🔊 Lendo ${pick.label}`);
     }
+
     function _stopTTS() {
         window.speechSynthesis?.cancel();
         _ttsActive = false;
         _ttsUtterance = null;
         _updateTTSBtn();
     }
+
     function _updateTTSBtn() {
-        const btn = document.getElementById('bible-tts-btn');
-        if (!btn) return;
-        if (_ttsActive) { btn.textContent = '⏹'; btn.classList.add('active'); btn.title = 'Parar leitura'; }
-        else { btn.textContent = '🔊'; btn.classList.remove('active'); btn.title = 'Ouvir capítulo'; }
+        ['bible-tts-btn', 'bible-focus-tts-btn'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            if (_ttsActive) { btn.textContent = '⏹'; btn.classList.add('active'); btn.title = 'Parar leitura'; }
+            else { btn.textContent = '🔊'; btn.classList.remove('active'); btn.title = 'Ler em voz alta'; }
+        });
     }
 
     const CATALOG = {
