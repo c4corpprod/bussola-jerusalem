@@ -538,7 +538,7 @@ const Bible = (() => {
     const MAX_BOOK = 88;
 
     // CDN base — dados hospedados no GitHub via jsDelivr
-    const CDN_BASE = 'https://cdn.jsdelivr.net/gh/Kaibadara/bussola-jerusalem@main/www/data/bibles';
+    const CDN_BASE = 'https://cdn.jsdelivr.net/gh/c4corpprod/bussola-jerusalem@main/www/data/bibles';
 
     async function loadBook(tr, bookNum) {
         const k = `${tr}/${bookNum}`;
