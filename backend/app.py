@@ -62,7 +62,21 @@ GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
 # ── Inicialização ──
 app = Flask(__name__, static_folder='../www', static_url_path='')
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-CORS(app, origins=['*'])
+
+# CORS restritivo: domínios autorizados via env CORS_ORIGINS (CSV)
+# Default cobre Firebase Hosting + dev local.
+_default_origins = ','.join([
+    'https://bussola-jerusalem-34859.web.app',
+    'https://bussola-jerusalem-34859.firebaseapp.com',
+    'http://localhost:5000',
+    'http://localhost:8080',
+    'http://127.0.0.1:5000',
+    'http://127.0.0.1:8080',
+    'capacitor://localhost',
+    'http://localhost',
+])
+_cors_origins = [o.strip() for o in os.environ.get('CORS_ORIGINS', _default_origins).split(',') if o.strip()]
+CORS(app, origins=_cors_origins, supports_credentials=True)
 
 # Rate limiter (graceful degradation sem Redis)
 if LIMITER_AVAILABLE:
@@ -135,6 +149,7 @@ def serve_static(path):
 # ═══════════════════════════════════════════════════════════════
 
 @app.route('/api/auth/send-token', methods=['POST'])
+@limiter.limit("5 per minute; 30 per hour")
 def api_send_token():
     """
     Etapa 1: Envia token de verificação por email
@@ -163,6 +178,7 @@ def api_send_token():
 
 
 @app.route('/api/auth/verify-token', methods=['POST'])
+@limiter.limit("10 per minute; 60 per hour")
 def api_verify_token():
     """
     Etapa 2: Verifica o token recebido por email
@@ -1241,6 +1257,150 @@ def api_get_public_profile(profile_id):
         "studies": [dict(s) for s in studies],
         "post_count": post_count
     })
+
+
+# ═══════════════════════════════════════════════════════════════
+# WEB PUSH (VAPID) — Notificações server-side
+# ═══════════════════════════════════════════════════════════════
+
+VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
+VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
+VAPID_SUBJECT = os.environ.get('VAPID_SUBJECT', 'mailto:c4corpbeats@gmail.com')
+PUSH_ADMIN_TOKEN = os.environ.get('PUSH_ADMIN_TOKEN', '')
+
+try:
+    from pywebpush import webpush, WebPushException
+    PYWEBPUSH_AVAILABLE = True
+except ImportError:
+    PYWEBPUSH_AVAILABLE = False
+
+
+@app.route('/api/push/config', methods=['GET'])
+def api_push_config():
+    """Retorna a chave pública VAPID para o frontend se inscrever."""
+    return jsonify({
+        "enabled": bool(VAPID_PUBLIC_KEY) and PYWEBPUSH_AVAILABLE,
+        "public_key": VAPID_PUBLIC_KEY
+    })
+
+
+@app.route('/api/push/subscribe', methods=['POST'])
+@limiter.limit("30 per hour")
+def api_push_subscribe():
+    """Salva uma subscription do navegador. Profile opcional."""
+    data = request.get_json() or {}
+    sub = data.get('subscription') or {}
+    endpoint = (sub.get('endpoint') or '').strip()
+    keys = sub.get('keys') or {}
+    p256dh = (keys.get('p256dh') or '').strip()
+    auth_key = (keys.get('auth') or '').strip()
+
+    if not endpoint or not p256dh or not auth_key:
+        return jsonify({"error": "Subscription inválida"}), 400
+
+    profile_id = None
+    token = request.headers.get('Authorization', '').replace('Bearer ', '') or request.cookies.get('session_token', '')
+    if token:
+        user = validate_session(token)
+        if user:
+            profile_id = user['profile_id']
+
+    user_agent = request.headers.get('User-Agent', '')[:255]
+
+    conn = get_db()
+    conn.execute(
+        '''INSERT INTO push_subscriptions (profile_id, endpoint, p256dh, auth, user_agent)
+           VALUES (?, ?, ?, ?, ?)
+           ON CONFLICT(endpoint) DO UPDATE SET
+               profile_id = excluded.profile_id,
+               p256dh = excluded.p256dh,
+               auth = excluded.auth,
+               last_seen = CURRENT_TIMESTAMP''',
+        (profile_id, endpoint, p256dh, auth_key, user_agent)
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({"success": True})
+
+
+@app.route('/api/push/unsubscribe', methods=['POST'])
+def api_push_unsubscribe():
+    """Remove uma subscription pelo endpoint."""
+    data = request.get_json() or {}
+    endpoint = (data.get('endpoint') or '').strip()
+    if not endpoint:
+        return jsonify({"error": "endpoint obrigatório"}), 400
+
+    conn = get_db()
+    conn.execute('DELETE FROM push_subscriptions WHERE endpoint = ?', (endpoint,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
+
+def _send_push_to_all(payload):
+    """Envia push para todas as subscriptions ativas. Remove inválidas."""
+    if not (PYWEBPUSH_AVAILABLE and VAPID_PRIVATE_KEY):
+        return {"sent": 0, "removed": 0, "error": "pywebpush ou VAPID não configurado"}
+
+    import json as _json
+    conn = get_db()
+    subs = conn.execute('SELECT id, endpoint, p256dh, auth FROM push_subscriptions').fetchall()
+    sent = 0
+    removed = 0
+    for s in subs:
+        try:
+            webpush(
+                subscription_info={
+                    "endpoint": s['endpoint'],
+                    "keys": {"p256dh": s['p256dh'], "auth": s['auth']}
+                },
+                data=_json.dumps(payload),
+                vapid_private_key=VAPID_PRIVATE_KEY,
+                vapid_claims={"sub": VAPID_SUBJECT}
+            )
+            sent += 1
+        except WebPushException as e:
+            # 404/410 = subscription expirada
+            status = getattr(e.response, 'status_code', 0) if e.response is not None else 0
+            if status in (404, 410):
+                conn.execute('DELETE FROM push_subscriptions WHERE id = ?', (s['id'],))
+                removed += 1
+        except Exception:
+            pass
+    conn.commit()
+    conn.close()
+    return {"sent": sent, "removed": removed}
+
+
+@app.route('/api/push/send-daily', methods=['POST'])
+def api_push_send_daily():
+    """Envia versículo do dia para todos os inscritos.
+    Protegido por header X-Admin-Token (configurar PUSH_ADMIN_TOKEN no .env).
+    Pode ser disparado por cron/GitHub Actions diariamente.
+    """
+    admin = request.headers.get('X-Admin-Token', '')
+    if not PUSH_ADMIN_TOKEN or admin != PUSH_ADMIN_TOKEN:
+        return jsonify({"error": "Não autorizado"}), 401
+
+    data = request.get_json() or {}
+    title = (data.get('title') or '✨ Versículo do Dia').strip()[:120]
+    body = (data.get('body') or '').strip()[:500]
+    if not body:
+        return jsonify({"error": "body obrigatório"}), 400
+
+    payload = {
+        "title": title,
+        "body": body,
+        "icon": "/assets/img/icon-192.png",
+        "badge": "/assets/img/icon-72.png",
+        "tag": "daily-verse",
+        "url": "/",
+        "tab": "tab-bible"
+    }
+    result = _send_push_to_all(payload)
+    return jsonify({"success": True, **result})
 
 
 # ═══════════════════════════════════════════════════════════════

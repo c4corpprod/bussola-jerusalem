@@ -173,6 +173,21 @@ def init_db():
         )
     ''')
 
+    # ── Tabela de Push Subscriptions (Web Push / VAPID) ──
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS push_subscriptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            profile_id INTEGER,
+            endpoint TEXT UNIQUE NOT NULL,
+            p256dh TEXT NOT NULL,
+            auth TEXT NOT NULL,
+            user_agent TEXT DEFAULT '',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE SET NULL
+        )
+    ''')
+
     # ── Índices para performance ──
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC)')
     cursor.execute('CREATE INDEX IF NOT EXISTS idx_posts_profile ON posts(profile_id)')

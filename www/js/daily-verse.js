@@ -158,6 +158,71 @@ const DailyVerse = (() => {
         });
     }
 
+    // ── Web Push (servidor) — opcional ──
+    // Permite receber notificações mesmo com app fechado, via VAPID + backend.
+    function urlBase64ToUint8Array(b64) {
+        const padding = '='.repeat((4 - b64.length % 4) % 4);
+        const base64 = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const raw = atob(base64);
+        const out = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+        return out;
+    }
+
+    async function subscribeServerPush(apiBase) {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            return { ok: false, error: 'Push não suportado neste navegador' };
+        }
+        try {
+            const cfgRes = await fetch(`${apiBase}/api/push/config`);
+            const cfg = await cfgRes.json();
+            if (!cfg.enabled || !cfg.public_key) {
+                return { ok: false, error: 'Servidor push não configurado' };
+            }
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') return { ok: false, error: 'Permissão negada' };
+
+            const reg = await navigator.serviceWorker.ready;
+            let sub = await reg.pushManager.getSubscription();
+            if (!sub) {
+                sub = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(cfg.public_key)
+                });
+            }
+            const session = localStorage.getItem('bj_session_token') || '';
+            await fetch(`${apiBase}/api/push/subscribe`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(session ? { 'Authorization': `Bearer ${session}` } : {})
+                },
+                body: JSON.stringify({ subscription: sub.toJSON() })
+            });
+            return { ok: true };
+        } catch (e) {
+            return { ok: false, error: e.message };
+        }
+    }
+
+    async function unsubscribeServerPush(apiBase) {
+        try {
+            const reg = await navigator.serviceWorker.ready;
+            const sub = await reg.pushManager.getSubscription();
+            if (sub) {
+                await fetch(`${apiBase}/api/push/unsubscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ endpoint: sub.endpoint })
+                });
+                await sub.unsubscribe();
+            }
+            return { ok: true };
+        } catch (e) {
+            return { ok: false, error: e.message };
+        }
+    }
+
     return {
         init,
         enable,
@@ -166,6 +231,8 @@ const DailyVerse = (() => {
         setPreferredHour,
         showVerseNow: () => showVerseNotification(true),
         todayVerse,
+        subscribeServerPush,
+        unsubscribeServerPush,
     };
 })();
 

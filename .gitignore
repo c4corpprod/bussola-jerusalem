@@ -37,3 +37,7 @@ android/local.properties
 # Logs
 import-log.txt
 firebase-debug.log
+
+backend/__pycache__/
+backend/tests/__pycache__/
+backend/.pytest_cache/

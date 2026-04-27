@@ -56,10 +56,40 @@
   ✅ Aba Mapa oculta na navegação
      • style="display:none" — código preservado para reativar futuramente
 
+  ✅ Hardening do backend (Abril 2026)
+     • CORS restritivo: apenas domínios autorizados (env CORS_ORIGINS)
+       Default: bussola-jerusalem-34859.web.app + localhost + capacitor://
+     • Rate-limit em /api/auth/send-token (5/min, 30/h)
+     • Rate-limit em /api/auth/verify-token (10/min, 60/h)
+     • Backend de chat/amigos: JÁ IMPLEMENTADO
+       - /api/community/users/search
+       - /api/community/friends/request|respond|list
+       - /api/community/chat/send|<friend_id>
+       - /api/community/verses/share|feed
+
+  ✅ Web Push real (VAPID) — infraestrutura pronta
+     • Endpoints backend:
+       - GET  /api/push/config       (entrega chave pública)
+       - POST /api/push/subscribe    (salva subscription)
+       - POST /api/push/unsubscribe
+       - POST /api/push/send-daily   (cron, protegido por X-Admin-Token)
+     • Tabela push_subscriptions (endpoint, p256dh, auth, profile_id)
+     • Cliente: DailyVerse.subscribeServerPush(apiBase)
+     • Script gerador de chaves: backend/scripts/generate_vapid.py
+     • Para ativar em produção:
+       1. python scripts/generate_vapid.py → copiar para .env do Render
+       2. Configurar PUSH_ADMIN_TOKEN
+       3. Cron diário (GitHub Actions / cron-job.org) chama /api/push/send-daily
+
+  ✅ Testes automatizados
+     • backend/tests/test_app.py — 7 testes pytest
+     • Cobre: token gen, sala chat key, salmo, CORS, rotas registradas
+     • Executar: cd backend && pytest tests/ -v
+
   🚧 Pendências
-     • Backend de chat privado e amigos (UI pronta, rotas faltam)
-     • APK release (atualmente só debug build local)
-     • Push notifications de comunidade (depende de FCM/Web Push backend)
+     • Gerar e configurar chaves VAPID em produção
+     • APK release signed (atualmente só debug build local)
+     • Cron diário para versículo do dia (Web Push)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ARQUITETURA DE HOSPEDAGEM
