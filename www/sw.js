@@ -5,12 +5,15 @@
    Cache-first para assets estáticos, Network-first para API
    ═══════════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'bussola-jerusalem-v13';
-const STATIC_CACHE = 'bussola-static-v4';
+const CACHE_NAME = 'bussola-jerusalem-v14';
+const STATIC_CACHE = 'bussola-static-v5';
 const API_CACHE = 'bussola-api-v4';
-const BIBLE_CACHE = 'bussola-bible-v1';
+const BIBLE_CACHE = 'bussola-bible-v2';
 const USER_DATA_CACHE = 'bussola-userdata-v1';
 const BIBLE_META_PREFIX = './data/bibles/__meta__/';
+
+// CDN base — mesma URL usada em bible.js
+const CDN_BASE = 'https://cdn.jsdelivr.net/gh/c4corpprod/bussola-jerusalem@main/www/data/bibles';
 
 // Assets estáticos para pré-cache (Shell do App)
 const STATIC_ASSETS = [
@@ -77,7 +80,7 @@ self.addEventListener('activate', event => {
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames
-                    .filter(name => name !== STATIC_CACHE && name !== API_CACHE && name !== BIBLE_CACHE)
+                    .filter(name => name !== STATIC_CACHE && name !== API_CACHE && name !== BIBLE_CACHE && name !== USER_DATA_CACHE)
                     .map(name => {
                         console.log(`🗑️ Removendo cache antigo: ${name}`);
                         return caches.delete(name);
@@ -88,7 +91,7 @@ self.addEventListener('activate', event => {
 });
 
 function buildBiblePath(id, book) {
-    return `./data/bibles/${id}/${book}.json`;
+    return `${CDN_BASE}/${id}/${book}.json`;
 }
 
 function buildMetaPath(id) {
@@ -229,7 +232,9 @@ self.addEventListener('fetch', event => {
     }
 
     // Bible JSON data → Cache-first (offline support)
-    if (url.pathname.includes('/data/bibles/')) {
+    // Intercepta tanto URL local quanto CDN (jsdelivr)
+    if (url.pathname.includes('/data/bibles/') ||
+        (url.hostname === 'cdn.jsdelivr.net' && url.pathname.includes('/data/bibles/'))) {
         event.respondWith(bibleCacheStrategy(request));
         return;
     }
